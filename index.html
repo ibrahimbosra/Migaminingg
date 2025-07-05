@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Miga Mining App - Friends</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
       --primary: #0066cc;
@@ -22,13 +22,11 @@
       --platinum: #e5e4e2;
       --diamond: #b9f2ff;
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Cairo', sans-serif;
       background: linear-gradient(135deg, #001a33, #003366);
@@ -38,7 +36,6 @@
       text-align: center;
       font-size: 14px;
     }
-
     img.invite-image {
       width: 90%;
       max-width: 400px;
@@ -47,7 +44,6 @@
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
-
     .invite-container {
       max-width: 480px;
       margin: 10px auto;
@@ -56,19 +52,17 @@
       padding: 15px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
-
     .invite-link-box {
       background-color: rgba(0, 51, 102, 0.8);
       border-radius: 8px;
       padding: 12px 15px;
       margin: 15px auto 10px;
-      word-break: break-all;
+      word-break: break-word;
       font-size: 16px;
       cursor: pointer;
       user-select: all;
       box-shadow: 0 0 8px rgba(182, 79, 200, 0.5);
     }
-
     .copy-button {
       display: inline-block;
       margin-top: 8px;
@@ -83,11 +77,9 @@
       transition: background-color 0.3s ease;
       font-weight: bold;
     }
-
     .copy-button:hover {
       background-color: #ffaa00;
     }
-
     .copy-message {
       margin-top: 10px;
       font-size: 14px;
@@ -96,11 +88,9 @@
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-
     .copy-message.visible {
       opacity: 1;
     }
-
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -112,7 +102,6 @@
       border-top: 1px solid rgba(0, 51, 102, 0.8);
       z-index: 999;
     }
-
     .nav-item {
       text-align: center;
       color: #aaa;
@@ -126,11 +115,9 @@
       flex: 1;
       max-width: 20%;
     }
-
     .nav-item i {
       font-size: 16px;
     }
-
     .nav-item.active {
       color: var(--accent);
     }
@@ -139,7 +126,7 @@
 <body>
 
   <div id="friends-tab" class="tab-content active">
-    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends">
+    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends" />
 
     <div class="invite-container">
       <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Frens</div>
@@ -204,6 +191,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // إعدادات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
       authDomain: "migamining-c6c20.firebaseapp.com",
@@ -221,25 +209,30 @@
     const copyMsg = document.getElementById('copyMsg');
     const refCountEl = document.getElementById('refCount');
 
-    const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+    // قراءة بيانات المستخدم من Telegram WebApp
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
     const userId = tgUser?.id?.toString() || "unknown";
 
+    // بناء رابط الإحالة الخاص بالمستخدم
     const referralLink = `https://t.me/MigaMiningBot?start=${userId}`;
     inviteLinkEl.textContent = referralLink;
 
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
-    const referrals = userSnap.exists() ? (userSnap.data().referrals || []) : [];
-    refCountEl.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
+    // جلب بيانات عدد الأصدقاء المدعوين من Firestore
+    async function fetchReferrals() {
+      if (userId === "unknown") {
+        refCountEl.innerHTML = "Friends invited: <strong>0</strong>";
+        return;
+      }
 
-    document.getElementById('copyBtn').addEventListener('click', () => {
-      navigator.clipboard.writeText(referralLink).then(() => {
-        copyMsg.classList.add('visible');
-        setTimeout(() => {
-          copyMsg.classList.remove('visible');
-        }, 1500);
-      });
-    });
-  </script>
-</body>
-</html>
+      try {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const referrals = userSnap.data().referrals || [];
+          refCountEl.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
+        } else {
+          refCountEl.innerHTML = "Friends invited: <strong>0</strong>";
+        }
+      } catch (error) {
+        console.error("Error fetching referrals:", error);
+        refCountEl.innerHTML = "Friends invited: <strong
