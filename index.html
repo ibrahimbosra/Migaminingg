@@ -121,6 +121,16 @@
     .nav-item.active {
       color: var(--accent);
     }
+    #invitedList {
+      margin-top: 10px;
+      list-style: none;
+      padding: 0;
+      font-size: 14px;
+      text-align: left;
+    }
+    #invitedList li {
+      padding: 5px 10px;
+    }
   </style>
 </head>
 <body>
@@ -140,6 +150,7 @@
       <div style="margin-top: 15px; font-size: 15px;">
         Friends invited: <strong id="invitedCount">0</strong>
       </div>
+      <ul id="invitedList"></ul>
     </div>
   </div>
 
@@ -169,7 +180,17 @@
   <!-- Firebase + JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      query,
+      where,
+      getDocs,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
@@ -200,7 +221,8 @@
           userId: userId,
           referralLink: referralLink,
           invitedAt: new Date().toISOString(),
-          referrerId: referrerId || null
+          referrerId: referrerId || null,
+          name: "Anonymous"
         });
 
         if (referrerId && referrerId !== userId) {
@@ -211,6 +233,31 @@
             referredAt: new Date().toISOString()
           });
         }
+      }
+
+      const referralsQuery = query(
+        collection(db, "referrals"),
+        where("referrerId", "==", userId),
+        orderBy("referredAt", "desc")
+      );
+      const referralsSnap = await getDocs(referralsQuery);
+      const referredCount = referralsSnap.size;
+      document.getElementById("invitedCount").textContent = referredCount;
+
+      const invitedList = document.getElementById("invitedList");
+
+      for (const docSnap of referralsSnap.docs) {
+        const referredId = docSnap.data().userId;
+        const referredUserRef = doc(db, "users", referredId);
+        const referredUserSnap = await getDoc(referredUserRef);
+
+        const name = referredUserSnap.exists() && referredUserSnap.data().name
+          ? referredUserSnap.data().name
+          : `User ${referredId}`;
+
+        const li = document.createElement("li");
+        li.textContent = `👤 ${name}`;
+        invitedList.appendChild(li);
       }
     }
   </script>
