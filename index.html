@@ -205,21 +205,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const tg = window.Telegram?.WebApp;
-    if (!tg) {
-      alert("Please open this page inside Telegram app.");
-      throw new Error("Telegram WebApp not found");
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('id');
+    const referrerId = urlParams.get('ref');
 
-    const user = tg.initDataUnsafe?.user;
-    if (!user || !user.id) {
-      alert("User data not found. Please open inside Telegram app.");
-      throw new Error("User data not available");
-    }
-
-    const userId = user.id.toString();
-
-    async function setupReferral() {
+    if (userId) {
       const referralLink = `https://t.me/Migamining_bot?start=${userId}`;
       document.getElementById('inviteLink').textContent = referralLink;
 
@@ -231,8 +221,18 @@
           userId: userId,
           referralLink: referralLink,
           invitedAt: new Date().toISOString(),
-          name: user.first_name || "Anonymous"
+          referrerId: referrerId || null,
+          name: "Anonymous"
         });
+
+        if (referrerId && referrerId !== userId) {
+          const referralPath = doc(db, "referrals", `${userId}`);
+          await setDoc(referralPath, {
+            userId: userId,
+            referrerId: referrerId,
+            referredAt: new Date().toISOString()
+          });
+        }
       }
 
       const referralsQuery = query(
@@ -241,11 +241,10 @@
         orderBy("referredAt", "desc")
       );
       const referralsSnap = await getDocs(referralsQuery);
-
-      document.getElementById("invitedCount").textContent = referralsSnap.size;
+      const referredCount = referralsSnap.size;
+      document.getElementById("invitedCount").textContent = referredCount;
 
       const invitedList = document.getElementById("invitedList");
-      invitedList.innerHTML = "";
 
       for (const docSnap of referralsSnap.docs) {
         const referredId = docSnap.data().userId;
@@ -261,9 +260,6 @@
         invitedList.appendChild(li);
       }
     }
-
-    setupReferral();
-
   </script>
 
   <script>
