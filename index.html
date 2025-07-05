@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miga Mining App - Friends</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0066cc;
+      --secondary: #004d99;
+      --accent: #ff9900;
+      --dark: #001a33;
+      --light: #f0f7ff;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --bronze: #cd7f32;
+      --silver: #c0c0c0;
+      --gold: #ffd700;
+      --platinum: #e5e4e2;
+      --diamond: #b9f2ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #001a33, #003366);
+      color: var(--light);
+      min-height: 100vh;
+      padding: 10px 0 70px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    img.invite-image {
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto 10px;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .invite-container {
+      max-width: 480px;
+      margin: 10px auto;
+      background-color: rgba(0, 40, 80, 0.5);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .invite-link-box {
+      background-color: rgba(0, 51, 102, 0.8);
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin: 15px auto 10px;
+      word-break: break-all;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: all;
+      box-shadow: 0 0 8px rgba(182, 79, 200, 0.5);
+    }
+
+    .copy-button {
+      display: inline-block;
+      margin-top: 8px;
+      background-color: var(--accent);
+      color: #001a33;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 25px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    .copy-button:hover {
+      background-color: #ffaa00;
+    }
+
+    .copy-message {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--success);
+      height: 18px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .copy-message.visible {
+      opacity: 1;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: rgba(10, 30, 50, 0.95);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      border-top: 1px solid rgba(0, 51, 102, 0.8);
+      z-index: 999;
+    }
+
+    .nav-item {
+      text-align: center;
+      color: #aaa;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 10px;
+      flex: 1;
+      max-width: 20%;
+    }
+
+    .nav-item i {
+      font-size: 16px;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="friends-tab" class="tab-content active">
+    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends">
+
+    <div class="invite-container">
+      <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Frens</div>
+      <div style="font-size: 16px; margin-bottom: 8px;">Invite a friend and get <strong>100 Miga</strong></div>
+      <div style="font-size: 14px; margin-bottom: 10px; color: #aee9f7;">
+        Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
+      </div>
+      <div id="inviteLink" class="invite-link-box" title="Click to copy link">Loading link...</div>
+      <button id="copyBtn" class="copy-button">📋 Copy link</button>
+      <button onclick="shareLink()" class="copy-button">📤 Share</button>
+      <div id="copyMsg" class="copy-message">Link copied!</div>
+      <div id="refCount" style="margin-top: 15px; font-size: 15px;">Friends invited: <strong>...</strong></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" data-tab="home-tab">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item active" data-tab="friends-tab">
+      <i class="fas fa-user-friends"></i>
+      <span>Friends</span>
+    </div>
+    <div class="nav-item" data-tab="mining-tab">
+      <i class="fas fa-digging"></i>
+      <span>Mining</span>
+    </div>
+    <div class="nav-item" data-tab="tasks-tab">
+      <i class="fas fa-tasks"></i>
+      <span>Tasks</span>
+    </div>
+    <div class="nav-item" data-tab="leaders-tab">
+      <i class="fas fa-trophy"></i>
+      <span>Leaders</span>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function () {
+        const tabId = this.getAttribute('data-tab');
+        window.location.href = tabId + '.html';
+      });
+    });
+
+    function shareLink() {
+      const inviteLink = document.getElementById('inviteLink').textContent.trim();
+      if (navigator.share) {
+        navigator.share({
+          title: 'Join Miga Mining!',
+          text: 'Get 100 Miga by joining through my link:',
+          url: inviteLink
+        }).catch(console.error);
+      } else {
+        navigator.clipboard.writeText(inviteLink);
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
+      authDomain: "migamining-c6c20.firebaseapp.com",
+      projectId: "migamining-c6c20",
+      storageBucket: "migamining-c6c20.appspot.com",
+      messagingSenderId: "737327385751",
+      appId: "1:737327385751:web:68eb8fd845caa7cad02dd2",
+      measurementId: "G-VXPKJSHPRC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const inviteLinkEl = document.getElementById('inviteLink');
+    const copyMsg = document.getElementById('copyMsg');
+    const refCountEl = document.getElementById('refCount');
+
+    const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+    const userId = tgUser?.id?.toString() || "unknown";
+
+    const referralLink = `https://t.me/MigaMiningBot?start=${userId}`;
+    inviteLinkEl.textContent = referralLink;
+
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const referrals = userSnap.exists() ? (userSnap.data().referrals || []) : [];
+    refCountEl.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(referralLink).then(() => {
+        copyMsg.classList.add('visible');
+        setTimeout(() => {
+          copyMsg.classList.remove('visible');
+        }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>
