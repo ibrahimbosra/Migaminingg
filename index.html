@@ -313,13 +313,16 @@
               // زيادة الرصيد 100 Miga
               balanceRef.transaction(currentBalance => {
                 return (currentBalance || 0) + 100;
+              }).then(() => {
+                // رسالة تأكيد تظهر لك على الهاتف عند نجاح العملية
+                alert("✅ تمت إضافة الإحالة وزيادة الرصيد 100 Miga!");
               });
             }).catch(err => {
-              console.error('Error updating referrals:', err);
+              alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
             });
           }
         }).catch(err => {
-          console.error('Error fetching referrals:', err);
+          alert('خطأ في جلب الإحالات: ' + err.message);
         });
       }
 
