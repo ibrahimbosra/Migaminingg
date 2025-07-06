@@ -102,6 +102,17 @@
       opacity: 1;
     }
 
+    /* Friends list styles */
+    #friendsList {
+      list-style: none;
+      padding: 0;
+      margin-top: 5px;
+      color: #cce7ff;
+      font-size: 14px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
     /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
@@ -160,9 +171,11 @@
       <button id="copyBtn" class="copy-button">📋 Copy link</button>
       <button onclick="shareLink()" class="copy-button">📤 Share</button>
       <div id="copyMsg" class="copy-message">Link copied!</div>
-      <div style="margin-top: 15px; font-size: 15px;">
-        Friends invited: <strong>3</strong>
+
+      <div style="margin-top: 15px; font-size: 15px; color: #aee9f7;">
+        Friends invited: <strong id="friendsCount">0</strong>
       </div>
+      <ul id="friendsList"></ul>
     </div>
   </div>
 
@@ -278,6 +291,31 @@
             username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
           });
         }
+      });
+
+      // جلب وعرض عدد وأسماء المدعوين
+      const referralsRef = database.ref('users/' + referralId + '/referrals');
+      referralsRef.on('value', snapshot => {
+        const referrals = snapshot.val() || [];
+        const friendsCountElem = document.getElementById('friendsCount');
+        const friendsListElem = document.getElementById('friendsList');
+
+        // تحديث عدد المدعوين
+        friendsCountElem.textContent = referrals.length;
+
+        // مسح القائمة القديمة
+        friendsListElem.innerHTML = '';
+
+        // جلب بيانات كل مدعو وعرض أسمائهم
+        referrals.forEach((refId) => {
+          database.ref('users/' + refId).once('value').then(userSnap => {
+            const userData = userSnap.val();
+            const username = userData?.username || "Unknown";
+            const li = document.createElement('li');
+            li.textContent = username + ` (ID: ${refId})`;
+            friendsListElem.appendChild(li);
+          });
+        });
       });
 
       // نسخ الرابط عند الضغط عليه
