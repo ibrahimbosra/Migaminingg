@@ -271,7 +271,7 @@
         .then(snapshot => {
           if (!snapshot.exists()) {
             userRef.set({
-              referrals: [],
+              referrals: {},
               username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
             }).catch(err => {
               alert('Error saving your data: ' + err.message);
@@ -285,32 +285,24 @@
       // Fetch and display referrals with error handling
       const referralsRef = database.ref('users/' + referralId + '/referrals');
       referralsRef.on('value', snapshot => {
-        const referrals = snapshot.val() || [];
+        const referrals = snapshot.val() || {};
+        const referralIds = Object.keys(referrals);
         const friendsCountElem = document.getElementById('friendsCount');
         const friendsListElem = document.getElementById('friendsList');
 
-        friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
+        friendsCountElem.innerHTML = `Friends invited: <strong>${referralIds.length}</strong>`;
         friendsListElem.innerHTML = '';
 
-        if (referrals.length === 0) {
+        if (referralIds.length === 0) {
           const li = document.createElement('li');
           li.textContent = "No friends invited yet.";
           friendsListElem.appendChild(li);
         } else {
-          referrals.forEach((refId) => {
-            database.ref('users/' + refId).once('value')
-              .then(userSnap => {
-                const userData = userSnap.val();
-                const username = userData?.username || "Unknown";
-                const li = document.createElement('li');
-                li.textContent = username + ` (ID: ${refId})`;
-                friendsListElem.appendChild(li);
-              })
-              .catch(err => {
-                const li = document.createElement('li');
-                li.textContent = `Error fetching friend data (ID: ${refId})`;
-                friendsListElem.appendChild(li);
-              });
+          referralIds.forEach(refId => {
+            const username = referrals[refId]?.username || "Unknown";
+            const li = document.createElement('li');
+            li.textContent = `${username} (ID: ${refId})`;
+            friendsListElem.appendChild(li);
           });
         }
       }, err => {
@@ -324,3 +316,4 @@
 
 </body>
 </html>
+
