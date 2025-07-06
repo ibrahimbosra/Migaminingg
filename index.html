@@ -34,55 +34,66 @@
       background: linear-gradient(135deg, #001a33, #003366);
       color: var(--light);
       min-height: 100vh;
-      padding: 10px 0 70px;
+      padding: 20px 10px 70px; /* رفع التنسيق مكان الصورة */
       text-align: center;
       font-size: 14px;
     }
 
-    /* Friends Page Styles */
-    img.invite-image {
-      width: 90%;
-      max-width: 400px;
-      margin: 20px auto 10px;
-      display: block;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-
     .invite-container {
       max-width: 480px;
-      margin: 10px auto;
+      margin: 0 auto; /* رفع التنسيق */
       background-color: rgba(0, 40, 80, 0.5);
       border-radius: 10px;
-      padding: 15px;
+      padding: 20px 25px 25px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .invite-container > div.title {
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .invite-container > div.subtitle {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .invite-container > div.description {
+      font-size: 14px;
+      margin-bottom: 15px;
+      color: #aee9f7;
     }
 
     .invite-link-box {
       background-color: rgba(0, 51, 102, 0.8);
       border-radius: 8px;
       padding: 12px 15px;
-      margin: 15px auto 10px;
+      margin: 0 auto 10px;
       word-break: break-all;
       font-size: 16px;
       cursor: pointer;
       user-select: all;
       box-shadow: 0 0 8px rgba(182, 79, 200, 0.5);
+      max-width: 100%;
+      text-align: center;
     }
 
     .copy-button {
-      display: inline-block;
-      margin-top: 8px;
+      display: block;
+      margin: 0 auto 15px;
       background-color: var(--accent);
       color: #001a33;
       border: none;
       border-radius: 8px;
-      padding: 10px 25px;
+      padding: 10px 40px;
       font-size: 14px;
       cursor: pointer;
       user-select: none;
       transition: background-color 0.3s ease;
       font-weight: bold;
+      max-width: 200px;
+      text-align: center;
     }
 
     .copy-button:hover {
@@ -103,14 +114,37 @@
     }
 
     /* Friends list styles */
+    #friendsCount {
+      margin-top: 15px;
+      font-size: 15px;
+      color: #aee9f7;
+      font-weight: 600;
+    }
+
     #friendsList {
       list-style: none;
-      padding: 0;
-      margin-top: 5px;
+      padding: 10px 15px;
+      margin-top: 10px;
       color: #cce7ff;
-      font-size: 14px;
-      max-height: 150px;
+      font-size: 15px;
+      max-height: 180px;
       overflow-y: auto;
+      background-color: rgba(0, 51, 102, 0.6);
+      border-radius: 8px;
+      text-align: right;
+      direction: rtl; /* لتنسيق عربي أفضل */
+      font-family: 'Cairo', sans-serif;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.1);
+    }
+
+    #friendsList li {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      font-weight: 500;
+    }
+
+    #friendsList li:last-child {
+      border-bottom: none;
     }
 
     /* Bottom Navigation */
@@ -157,24 +191,21 @@
 
   <!-- Friends Tab Content -->
   <div id="friends-tab" class="tab-content active">
-    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends" />
 
     <div class="invite-container">
-      <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Friends</div>
-      <div style="font-size: 16px; margin-bottom: 8px;">Invite a friend and get <strong>100 Miga</strong></div>
-      <div style="font-size: 14px; margin-bottom: 10px; color: #aee9f7;">
+      <div class="title">Invite Friends</div>
+      <div class="subtitle">Invite a friend and get <strong>100 Miga</strong></div>
+      <div class="description">
         Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
       </div>
+
       <div id="inviteLink" class="invite-link-box" title="Click to copy link">
         Loading invite link...
       </div>
       <button id="copyBtn" class="copy-button">📋 Copy link</button>
-      <button onclick="shareLink()" class="copy-button">📤 Share</button>
       <div id="copyMsg" class="copy-message">Link copied!</div>
 
-      <div style="margin-top: 15px; font-size: 15px; color: #aee9f7;">
-        Friends invited: <strong id="friendsCount">0</strong>
-      </div>
+      <div id="friendsCount">Friends invited: <strong>0</strong></div>
       <ul id="friendsList"></ul>
     </div>
   </div>
@@ -234,18 +265,6 @@
     copyBtn.addEventListener('click', () => {
       copyText(inviteLink.textContent.trim());
     });
-
-    function shareLink() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Join Miga Mining!',
-          text: 'Get 100 Miga by joining through my link:',
-          url: inviteLink.textContent.trim()
-        }).catch(console.error);
-      } else {
-        copyText(inviteLink.textContent.trim());
-      }
-    }
   </script>
 
   <!-- Telegram Web App SDK -->
@@ -301,12 +320,12 @@
         const friendsListElem = document.getElementById('friendsList');
 
         // تحديث عدد المدعوين
-        friendsCountElem.textContent = referrals.length;
+        friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
 
         // مسح القائمة القديمة
         friendsListElem.innerHTML = '';
 
-        // جلب بيانات كل مدعو وعرض أسمائهم
+        // جلب بيانات كل مدعو وعرض أسمائهم بشكل مرتب وأنيق
         referrals.forEach((refId) => {
           database.ref('users/' + refId).once('value').then(userSnap => {
             const userData = userSnap.val();
