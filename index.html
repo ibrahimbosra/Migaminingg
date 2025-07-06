@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Miga Mining App - Friends</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -227,8 +227,14 @@
     const copyMsg = document.getElementById('copyMsg');
 
     function copyText(text) {
-      navigator.clipboard.writeText(text);
-      // حذف رسالة التنبيه بعد النسخ
+      navigator.clipboard.writeText(text).then(() => {
+        copyMsg.classList.add('visible');
+        setTimeout(() => {
+          copyMsg.classList.remove('visible');
+        }, 2000);
+      }).catch(err => {
+        alert('فشل النسخ: ' + err);
+      });
     }
 
     inviteLink.addEventListener('click', () => {
