@@ -46,6 +46,7 @@
       border-radius: 10px;
       padding: 20px 25px 25px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+      position: relative;
     }
 
     .invite-container > div.title {
@@ -125,9 +126,19 @@
       border-bottom: none;
     }
 
+    /* Loading indicator */
+    #loadingIndicator {
+      font-size: 14px;
+      color: var(--accent);
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
+      left: 0;
+      right: 0;
       width: 100%;
       background: rgba(10, 30, 50, 0.95);
       display: flex;
@@ -135,6 +146,7 @@
       padding: 8px 0;
       border-top: 1px solid rgba(0, 51, 102, 0.8);
       z-index: 999;
+      box-sizing: border-box;
     }
 
     .nav-item {
@@ -180,6 +192,7 @@
       <div id="copyMsg" class="copy-message">Link copied!</div>
 
       <div id="friendsCount">Friends invited: <strong>0</strong></div>
+      <div id="loadingIndicator" style="display:none;">Loading friends...</div>
       <ul id="friendsList"></ul>
     </div>
   </div>
@@ -282,13 +295,17 @@
           alert('Error fetching user data: ' + err.message);
         });
 
-      // Fetch and display referrals with error handling
+      // Fetch and display referrals with loading indicator and error handling
       const referralsRef = database.ref('users/' + referralId + '/referrals');
-      referralsRef.on('value', snapshot => {
-        const referrals = snapshot.val() || [];
-        const friendsCountElem = document.getElementById('friendsCount');
-        const friendsListElem = document.getElementById('friendsList');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const friendsCountElem = document.getElementById('friendsCount');
+      const friendsListElem = document.getElementById('friendsList');
 
+      loadingIndicator.style.display = 'block'; // Show loading indicator
+
+      referralsRef.on('value', snapshot => {
+        loadingIndicator.style.display = 'none'; // Hide loading indicator when data arrives
+        const referrals = snapshot.val() || [];
         friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
         friendsListElem.innerHTML = '';
 
@@ -314,6 +331,7 @@
           });
         }
       }, err => {
+        loadingIndicator.style.display = 'none'; // Hide loading indicator on error
         alert('Error fetching friends list: ' + err.message);
       });
 
