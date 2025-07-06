@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Miga Mining App - Friends</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
       --primary: #0066cc;
@@ -14,6 +14,13 @@
       --dark: #001a33;
       --light: #f0f7ff;
       --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --bronze: #cd7f32;
+      --silver: #c0c0c0;
+      --gold: #ffd700;
+      --platinum: #e5e4e2;
+      --diamond: #b9f2ff;
     }
 
     * {
@@ -32,6 +39,7 @@
       font-size: 14px;
     }
 
+    /* Friends Page Styles */
     img.invite-image {
       width: 90%;
       max-width: 400px;
@@ -55,7 +63,7 @@
       border-radius: 8px;
       padding: 12px 15px;
       margin: 15px auto 10px;
-      word-break: break-word;
+      word-break: break-all;
       font-size: 16px;
       cursor: pointer;
       user-select: all;
@@ -94,6 +102,7 @@
       opacity: 1;
     }
 
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -131,8 +140,9 @@
 </head>
 <body>
 
+  <!-- Friends Tab Content -->
   <div id="friends-tab" class="tab-content active">
-    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends">
+    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends" />
 
     <div class="invite-container">
       <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Friends</div>
@@ -140,13 +150,19 @@
       <div style="font-size: 14px; margin-bottom: 10px; color: #aee9f7;">
         Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
       </div>
-      <div id="inviteLink" class="invite-link-box">Loading invite link...</div>
+      <div id="inviteLink" class="invite-link-box" title="Click to copy link">
+        Loading invite link...
+      </div>
       <button id="copyBtn" class="copy-button">📋 Copy link</button>
       <button onclick="shareLink()" class="copy-button">📤 Share</button>
       <div id="copyMsg" class="copy-message">Link copied!</div>
+      <div style="margin-top: 15px; font-size: 15px;">
+        Friends invited: <strong>3</strong>
+      </div>
     </div>
   </div>
 
+  <!-- Bottom Navigation -->
   <div class="bottom-nav">  
     <div class="nav-item" data-tab="home-tab">
       <i class="fas fa-home"></i>
@@ -170,68 +186,73 @@
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script>
-    // Telegram WebApp Ready
-    if (window.Telegram && Telegram.WebApp) {
-      Telegram.WebApp.expand();
-      Telegram.WebApp.ready();
-    }
-
-    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
-    const inviteLinkEl = document.getElementById("inviteLink");
-    const copyMsg = document.getElementById("copyMsg");
-
-    if (user?.id) {
-      const botUsername = "Migamining_bot";
-      const link = `https://t.me/${botUsername}?start=${user.id}`;
-      inviteLinkEl.textContent = link;
-
-      document.getElementById("copyBtn").addEventListener("click", () => {
-        navigator.clipboard.writeText(link).then(() => {
-          copyMsg.classList.add("visible");
-          setTimeout(() => copyMsg.classList.remove("visible"), 1500);
-        });
-      });
-
-      inviteLinkEl.addEventListener("click", () => {
-        navigator.clipboard.writeText(link).then(() => {
-          copyMsg.classList.add("visible");
-          setTimeout(() => copyMsg.classList.remove("visible"), 1500);
-        });
-      });
-    }
-
-    function shareLink() {
-      const link = inviteLinkEl.textContent.trim();
-      if (navigator.share) {
-        navigator.share({
-          title: 'Join Miga Mining!',
-          text: 'Get 100 Miga by joining through my link:',
-          url: link
-        }).catch(console.error);
-      } else {
-        navigator.clipboard.writeText(link);
-      }
-    }
-
-    // Navigation
+    // Tab Switching Functionality
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', function () {
         const tabId = this.getAttribute('data-tab');
         window.location.href = tabId + '.html';
       });
     });
-  </script>
-</body>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const tg = window.Telegram.WebApp;
-  const user = tg.initDataUnsafe.user;
-  const userId = user.id;
-  const username = user.username || "NoUsername";
 
-  // توليد رابط الإحالة الخاص بالمستخدم
-  const referralLink = `https://t.me/MigaMining_bot?start=${userId}`;
-  document.getElementById('inviteLink').textContent = referralLink;
-</script>
+    // Copy to clipboard functionality
+    const inviteLink = document.getElementById('inviteLink');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyMsg = document.getElementById('copyMsg');
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        copyMsg.classList.add('visible');
+        setTimeout(() => {
+          copyMsg.classList.remove('visible');
+        }, 1500);
+      });
+    }
+
+    inviteLink.addEventListener('click', () => {
+      copyText(inviteLink.textContent.trim());
+    });
+
+    copyBtn.addEventListener('click', () => {
+      copyText(inviteLink.textContent.trim());
+    });
+
+    function shareLink() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Join Miga Mining!',
+          text: 'Get 100 Miga by joining through my link:',
+          url: inviteLink.textContent.trim()
+        }).catch(console.error);
+      } else {
+        copyText(inviteLink.textContent.trim());
+      }
+    }
+  </script>
+
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Referral Link Generation Script -->
+  <script>
+    // دالة لجلب باراميتر من رابط الصفحة
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const startParam = getQueryParam('start');
+    const referralId = startParam || (window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
+
+    if (referralId) {
+      const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
+      inviteLink.textContent = referralLink;
+    } else {
+      inviteLink.textContent = "Referral link not available.";
+    }
+  </script>
+
+</body>
 </html>
+
