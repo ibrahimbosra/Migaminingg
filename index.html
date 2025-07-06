@@ -311,7 +311,8 @@
             userRef.set({
               referrals: [],
               username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername",
-              balance: 0
+              balance: 0,
+              referral_points: 0 // <--- أضف الحقل عند التسجيل لأول مرة
             }).catch(err => {
               alert('Error saving your data: ' + err.message);
             });
@@ -321,12 +322,13 @@
           alert('Error fetching user data: ' + err.message);
         });
 
-      // Function to add referral and update balance
+      // Function to add referral and update balance and referral_points
       function addReferralAndReward(referralId, newUserId) {
         if (referralId === newUserId) return; // لا تسجل نفسك كمدعو لنفسك
 
         const referralsRef = database.ref('users/' + referralId + '/referrals');
         const balanceRef = database.ref('users/' + referralId + '/balance');
+        const referralPointsRef = database.ref('users/' + referralId + '/referral_points'); // <--- هذا هو الجديد
 
         referralsRef.once('value').then(snapshot => {
           let referrals = snapshot.val() || [];
@@ -336,6 +338,10 @@
               // زيادة الرصيد 100 Miga
               balanceRef.transaction(currentBalance => {
                 return (currentBalance || 0) + 100;
+              });
+              // زيادة مجموع النقاط من الإحالات 100 Miga
+              referralPointsRef.transaction(currentTotal => {
+                return (currentTotal || 0) + 100;
               });
             }).catch(err => {
               alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
