@@ -79,27 +79,6 @@
       text-align: center;
     }
 
-    .copy-button {
-      display: block;
-      margin: 0 auto 15px;
-      background-color: var(--accent);
-      color: #001a33;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 40px;
-      font-size: 14px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease;
-      font-weight: bold;
-      max-width: 200px;
-      text-align: center;
-    }
-
-    .copy-button:hover {
-      background-color: #ffaa00;
-    }
-
     .copy-message {
       margin-top: 10px;
       font-size: 14px;
@@ -132,7 +111,7 @@
       background-color: rgba(0, 51, 102, 0.6);
       border-radius: 8px;
       text-align: left;
-      direction: ltr; /* لتنسيق عربي أفضل */
+      direction: ltr;
       font-family: 'Cairo', sans-serif;
       box-shadow: inset 0 0 5px rgba(255,255,255,0.1);
     }
@@ -202,7 +181,6 @@
       <div id="inviteLink" class="invite-link-box" title="Click to copy link">
         Loading invite link...
       </div>
-      <button id="copyBtn" class="copy-button">📋 Copy link</button>
       <div id="copyMsg" class="copy-message">Link copied!</div>
 
       <div id="friendsCount">Friends invited: <strong>0</strong></div>
@@ -246,23 +224,14 @@
 
     // Copy to clipboard functionality
     const inviteLink = document.getElementById('inviteLink');
-    const copyBtn = document.getElementById('copyBtn');
     const copyMsg = document.getElementById('copyMsg');
 
     function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        copyMsg.classList.add('visible');
-        setTimeout(() => {
-          copyMsg.classList.remove('visible');
-        }, 1500);
-      });
+      navigator.clipboard.writeText(text);
+      // حذف رسالة التنبيه بعد النسخ
     }
 
     inviteLink.addEventListener('click', () => {
-      copyText(inviteLink.textContent.trim());
-    });
-
-    copyBtn.addEventListener('click', () => {
       copyText(inviteLink.textContent.trim());
     });
   </script>
@@ -334,13 +303,6 @@
             li.textContent = username + ` (ID: ${refId})`;
             friendsListElem.appendChild(li);
           });
-        });
-      });
-
-      // نسخ الرابط عند الضغط عليه
-      inviteLink.addEventListener('click', () => {
-        navigator.clipboard.writeText(referralLink).then(() => {
-          alert('Referral link copied to clipboard!');
         });
       });
 
