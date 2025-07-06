@@ -223,4 +223,15 @@
     });
   </script>
 </body>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  const user = tg.initDataUnsafe.user;
+  const userId = user.id;
+  const username = user.username || "NoUsername";
+
+  // توليد رابط الإحالة الخاص بالمستخدم
+  const referralLink = `https://t.me/MigaMining_bot?start=${userId}`;
+  document.getElementById('inviteLink').textContent = referralLink;
+</script>
 </html>
