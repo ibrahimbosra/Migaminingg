@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">      
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">      
-  <title>Miga Mining App - Friends</title>      
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">      
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">      
-  <style>      
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Miga Mining App - Friends</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
     :root {
       --primary: #0066cc;
       --secondary: #004d99;
@@ -16,11 +19,6 @@
       --success: #28a745;
       --danger: #dc3545;
       --warning: #ffc107;
-      --bronze: #cd7f32;
-      --silver: #c0c0c0;
-      --gold: #ffd700;
-      --platinum: #e5e4e2;
-      --diamond: #b9f2ff;
     }
     * {
       margin: 0;
@@ -35,14 +33,6 @@
       padding: 10px 0 70px;
       text-align: center;
       font-size: 14px;
-    }
-    img.invite-image {
-      width: 90%;
-      max-width: 400px;
-      margin: 20px auto 10px;
-      display: block;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
     .invite-container {
       max-width: 480px;
@@ -91,107 +81,42 @@
     .copy-message.visible {
       opacity: 1;
     }
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: rgba(10, 30, 50, 0.95);
-      display: flex;
-      justify-content: space-around;
-      padding: 8px 0;
-      border-top: 1px solid rgba(0, 51, 102, 0.8);
-      z-index: 999;
-    }
-    .nav-item {
-      text-align: center;
-      color: #aaa;
-      font-size: 10px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      padding: 3px 10px;
-      flex: 1;
-      max-width: 20%;
-    }
-    .nav-item i {
-      font-size: 16px;
-    }
-    .nav-item.active {
-      color: var(--accent);
-    }
-    #invitedList {
-      margin-top: 10px;
-      list-style: none;
-      padding: 0;
-      font-size: 14px;
-      text-align: left;
-    }
-    #invitedList li {
-      padding: 5px 10px;
-    }
   </style>
 </head>
 <body>
-
-  <div id="friends-tab" class="tab-content active">
-    <img class="invite-image" src="https://i.ibb.co/k21jPLDd/refer-friend-concept-illustration.png" alt="Invite Friends">
-    <div class="invite-container">
-      <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Friends</div>
-      <div style="font-size: 16px; margin-bottom: 8px;">Invite a friend and get <strong>100 Miga</strong></div>
-      <div style="font-size: 14px; margin-bottom: 10px; color: #aee9f7;">
-        Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
-      </div>
-      <div id="inviteLink" class="invite-link-box">Loading...</div>
-      <button id="copyBtn" class="copy-button">📋 Copy link</button>
-      <button onclick="shareLink()" class="copy-button">📤 Share</button>
-      <div id="copyMsg" class="copy-message">Link copied!</div>
-      <div style="margin-top: 15px; font-size: 15px;">
-        Friends invited: <strong id="invitedCount">0</strong>
-      </div>
-      <ul id="invitedList"></ul>
+  <div class="invite-container">
+    <div style="font-weight: bold; font-size: 22px; margin-bottom: 10px;">Invite Friends</div>
+    <div style="font-size: 16px; margin-bottom: 8px;">
+      Invite a friend and get <strong>100 Miga</strong>
     </div>
+    <div
+      style="font-size: 14px; margin-bottom: 10px; color: #aee9f7;"
+    >
+      Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
+    </div>
+    <div id="inviteLink" class="invite-link-box" title="Click to copy link">
+      Loading invite link...
+    </div>
+    <button id="copyBtn" class="copy-button">📋 Copy link</button>
+    <div id="copyMsg" class="copy-message">Link copied!</div>
+    <div style="margin-top: 15px; font-size: 15px;">
+      Friends invited: <strong id="friendsCount">0</strong>
+    </div>
+    <div id="friendsList" style="margin-top:10px; font-size:14px; color:#aee9f7;"></div>
   </div>
 
-  <div class="bottom-nav">
-    <div class="nav-item" data-tab="home-tab">
-      <i class="fas fa-home"></i>
-      <span>Home</span>
-    </div>
-    <div class="nav-item active" data-tab="friends-tab">
-      <i class="fas fa-user-friends"></i>
-      <span>Friends</span>
-    </div>
-    <div class="nav-item" data-tab="mining-tab">
-      <i class="fas fa-digging"></i>
-      <span>Mining</span>
-    </div>
-    <div class="nav-item" data-tab="tasks-tab">
-      <i class="fas fa-tasks"></i>
-      <span>Tasks</span>
-    </div>
-    <div class="nav-item" data-tab="leaders-tab">
-      <i class="fas fa-trophy"></i>
-      <span>Leaders</span>
-    </div>
-  </div>
-
-  <!-- Firebase + JavaScript -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import {
       getFirestore,
       doc,
       setDoc,
       getDoc,
       collection,
-      query,
-      where,
       getDocs,
-      orderBy
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
       authDomain: "migamining-c6c20.firebaseapp.com",
@@ -199,110 +124,95 @@
       storageBucket: "migamining-c6c20.firebasestorage.app",
       messagingSenderId: "737327385751",
       appId: "1:737327385751:web:68eb8fd845caa7cad02dd2",
-      measurementId: "G-VXPKJSHPRC"
+      measurementId: "G-VXPKJSHPRC",
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('id');
-    const referrerId = urlParams.get('ref');
-
-    if (userId) {
-      const referralLink = `https://t.me/Migamining_bot?start=${userId}`;
-      document.getElementById('inviteLink').textContent = referralLink;
-
-      const userRef = doc(db, "users", userId);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          userId: userId,
-          referralLink: referralLink,
-          invitedAt: new Date().toISOString(),
-          referrerId: referrerId || null,
-          name: "Anonymous"
-        });
-
-        if (referrerId && referrerId !== userId) {
-          const referralPath = doc(db, "referrals", `${userId}`);
-          await setDoc(referralPath, {
-            userId: userId,
-            referrerId: referrerId,
-            referredAt: new Date().toISOString()
-          });
+    // جلب بيانات المستخدم من Telegram WebApp
+    function getTelegramUser() {
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+          return window.Telegram.WebApp.initDataUnsafe.user || null;
         }
+        return null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function main() {
+      const telegramUser = getTelegramUser();
+
+      if (!telegramUser) {
+        alert("Please open this app inside Telegram.");
+        return;
       }
 
-      const referralsQuery = query(
-        collection(db, "referrals"),
-        where("referrerId", "==", userId),
-        orderBy("referredAt", "desc")
+      const userId = telegramUser.id.toString();
+      const username = telegramUser.username || telegramUser.first_name || "Unknown";
+
+      // رابط بوتك مع باراميتر start=userId
+      const botUsername = "Migamining_bot"; // عدله حسب اسم بوتك
+      const myInviteLink = `https://t.me/${botUsername}?start=${userId}`;
+
+      // عرض رابط الإحالة
+      const inviteLinkEl = document.getElementById("inviteLink");
+      inviteLinkEl.textContent = myInviteLink;
+
+      // نسخ الرابط عند الضغط عليه
+      inviteLinkEl.onclick = () => {
+        navigator.clipboard.writeText(myInviteLink);
+        showCopyMessage();
+      };
+
+      // تسجيل المستخدم الحالي في Firebase
+      const userDocRef = doc(db, "users", userId);
+      await setDoc(
+        userDocRef,
+        {
+          id: userId,
+          username: username,
+          timestamp: Date.now(),
+        },
+        { merge: true }
       );
-      const referralsSnap = await getDocs(referralsQuery);
-      const referredCount = referralsSnap.size;
-      document.getElementById("invitedCount").textContent = referredCount;
 
-      const invitedList = document.getElementById("invitedList");
+      // جلب عدد وأسماء الأصدقاء (المدعوين)
+      const friendsColRef = collection(db, "users", userId, "friends");
+      const friendsSnapshot = await getDocs(friendsColRef);
 
-      for (const docSnap of referralsSnap.docs) {
-        const referredId = docSnap.data().userId;
-        const referredUserRef = doc(db, "users", referredId);
-        const referredUserSnap = await getDoc(referredUserRef);
+      const friendsCountEl = document.getElementById("friendsCount");
+      friendsCountEl.textContent = friendsSnapshot.size;
 
-        const name = referredUserSnap.exists() && referredUserSnap.data().name
-          ? referredUserSnap.data().name
-          : `User ${referredId}`;
-
-        const li = document.createElement("li");
-        li.textContent = `👤 ${name}`;
-        invitedList.appendChild(li);
-      }
-    }
-  </script>
-
-  <script>
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', function () {
-        const tabId = this.getAttribute('data-tab');
-        window.location.href = tabId + '.html';
-      });
-    });
-
-    const inviteLink = document.getElementById('inviteLink');
-    const copyBtn = document.getElementById('copyBtn');
-    const copyMsg = document.getElementById('copyMsg');
-
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        copyMsg.classList.add('visible');
-        setTimeout(() => {
-          copyMsg.classList.remove('visible');
-        }, 1500);
-      });
-    }
-
-    inviteLink.addEventListener('click', () => {
-      copyText(inviteLink.textContent.trim());
-    });
-
-    copyBtn.addEventListener('click', () => {
-      copyText(inviteLink.textContent.trim());
-    });
-
-    function shareLink() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Join Miga Mining!',
-          text: 'Get 100 Miga by joining through my link:',
-          url: inviteLink.textContent.trim()
-        }).catch(console.error);
+      const friendsListEl = document.getElementById("friendsList");
+      if (friendsSnapshot.size === 0) {
+        friendsListEl.textContent = "No friends invited yet.";
       } else {
-        copyText(inviteLink.textContent.trim());
+        friendsListEl.innerHTML = "<strong>Friends List:</strong><br>";
+        friendsSnapshot.forEach((doc) => {
+          const data = doc.data();
+          friendsListEl.innerHTML += `- ${data.username}<br>`;
+        });
       }
     }
-  </script>
 
+    function showCopyMessage() {
+      const copyMsg = document.getElementById("copyMsg");
+      copyMsg.classList.add("visible");
+      setTimeout(() => {
+        copyMsg.classList.remove("visible");
+      }, 1500);
+    }
+
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      const inviteLinkEl = document.getElementById("inviteLink");
+      navigator.clipboard.writeText(inviteLinkEl.textContent);
+      showCopyMessage();
+    });
+
+    main();
+  </script>
 </body>
 </html>
