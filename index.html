@@ -137,6 +137,10 @@
       color: var(--accent);
     }
   </style>
+
+  <!-- Firebase libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -234,8 +238,24 @@
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Referral Link Generation Script -->
+  <!-- Firebase Initialization and Referral Link Script -->
   <script>
+    // Firebase configuration (استبدل القيم بقيم مشروعك)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
+      authDomain: "migamining-c6c20.firebaseapp.com",
+      databaseURL: "https://migamining-c6c20-default-rtdb.firebaseio.com",
+      projectId: "migamining-c6c20",
+      storageBucket: "migamining-c6c20.appspot.com",
+      messagingSenderId: "737327385751",
+      appId: "1:737327385751:web:68eb8fd845caa7cad02dd2",
+      measurementId: "G-VXPKJSHPRC"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
     // دالة لجلب باراميتر من رابط الصفحة
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -248,6 +268,25 @@
     if (referralId) {
       const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
       inviteLink.textContent = referralLink;
+
+      // تسجيل المستخدم في Firebase إذا لم يكن موجودًا
+      const userRef = database.ref('users/' + referralId);
+      userRef.once('value', snapshot => {
+        if (!snapshot.exists()) {
+          userRef.set({
+            referrals: [],
+            username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
+          });
+        }
+      });
+
+      // نسخ الرابط عند الضغط عليه
+      inviteLink.addEventListener('click', () => {
+        navigator.clipboard.writeText(referralLink).then(() => {
+          alert('Referral link copied to clipboard!');
+        });
+      });
+
     } else {
       inviteLink.textContent = "Referral link not available.";
     }
@@ -255,4 +294,3 @@
 
 </body>
 </html>
-
