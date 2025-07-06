@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    /* التنسيقات كما هي تمامًا */
     :root {
       --primary: #0066cc;
       --secondary: #004d99;
@@ -273,6 +274,7 @@
 
     const startParam = getQueryParam('start');
     const referralId = startParam || (window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
+    const currentUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
     if (referralId) {
       const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
@@ -285,7 +287,8 @@
           if (!snapshot.exists()) {
             userRef.set({
               referrals: [],
-              username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
+              username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername",
+              balance: 0
             }).catch(err => {
               alert('Error saving your data: ' + err.message);
             });
@@ -294,6 +297,36 @@
         .catch(err => {
           alert('Error fetching user data: ' + err.message);
         });
+
+      // Function to add referral and update balance
+      function addReferralAndReward(referralId, newUserId) {
+        if (referralId === newUserId) return; // لا تسجل نفسك كمدعو لنفسك
+
+        const referralsRef = database.ref('users/' + referralId + '/referrals');
+        const balanceRef = database.ref('users/' + referralId + '/balance');
+
+        referralsRef.once('value').then(snapshot => {
+          let referrals = snapshot.val() || [];
+          if (!referrals.includes(newUserId)) {
+            referrals.push(newUserId);
+            referralsRef.set(referrals).then(() => {
+              // زيادة الرصيد 100 Miga
+              balanceRef.transaction(currentBalance => {
+                return (currentBalance || 0) + 100;
+              });
+            }).catch(err => {
+              console.error('Error updating referrals:', err);
+            });
+          }
+        }).catch(err => {
+          console.error('Error fetching referrals:', err);
+        });
+      }
+
+      // تسجيل المدعو الحالي كصديق (إذا لم يكن هو نفسه)
+      if (currentUserId && referralId) {
+        addReferralAndReward(referralId, currentUserId);
+      }
 
       // Fetch and display referrals with loading indicator and error handling
       const referralsRef = database.ref('users/' + referralId + '/referrals');
