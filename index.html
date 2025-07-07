@@ -100,7 +100,7 @@
       font-weight: 600;
     }
 
-    /* جدول الإحالات */
+    /* Referrals table */
     .referrals-table {
       width: 100%;
       margin-top: 12px;
@@ -117,18 +117,13 @@
       background: rgba(0,51,102,0.7);
       color: #ff9900;
     }
-    .referrals-table tfoot td {
-      background: rgba(0,51,102,0.6);
-      font-weight: bold;
-      color: #ffd700;
-    }
     .referrals-table td {
       background: rgba(0,51,102,0.3);
     }
     .referrals-table .center {
       text-align: center;
     }
-    /* نهاية جدول الإحالات */
+    /* End referrals table */
 
     #loadingIndicator {
       font-size: 14px;
@@ -167,7 +162,7 @@
     }
 
     .nav-item i {
-      font-size: 停止px;
+      font-size: 20px;
     }
 
     .nav-item.active {
@@ -184,9 +179,9 @@
   <div id="friends-tab" class="tab-content active">
     <div class="invite-container">
       <div class="title">Invite Friends</div>
-      <div class="subtitle">Invite a friend and get <strong>100 Miga</strong></div>
+      <div class="subtitle">Invite friends to join Miga Mining</div>
       <div class="description">
-        Earn 100 Miga for each friend. Invite 10 friends and get a free mining plan!
+        Invite your friends to join the app and grow your network.
       </div>
 
       <div id="inviteLink" class="invite-link-box" title="Click to copy link">
@@ -196,28 +191,21 @@
 
       <div id="friendsCount">Friends invited: <strong>0</strong></div>
       <div id="loadingIndicator" style="display:none;">Loading friends...</div>
-      <!-- جدول الإحالات -->
+      <!-- Referrals table -->
       <div style="overflow-x:auto;">
         <table class="referrals-table">
           <thead>
             <tr>
               <th>#</th>
               <th>Username</th>
-              <th>Reward</th>
             </tr>
           </thead>
           <tbody id="referralsBody">
-            <!-- سيتم ملء البيانات هنا -->
+            <!-- Data will be populated here -->
           </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" class="center">Total</td>
-              <td id="referralsTotal" class="center">0 Mg</td>
-            </tr>
-          </tfoot>
         </table>
       </div>
-      <!-- نهاية الجدول -->
+      <!-- End table -->
     </div>
   </div>
 
@@ -310,150 +298,111 @@
           if (!snapshot.exists()) {
             userRef.set({
               referrals: [],
-              username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername",
-              balance: 0,
-              referral_points: 0
+              username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
             }).then(() => {
-              console.log('تم إنشاء المستخدم بنجاح مع balance و referral_points');
+              console.log('User created successfully');
             }).catch(err => {
-              console.error('خطأ في إنشاء المستخدم:', err);
+              console.error('Error creating user:', err);
               alert('Error saving your data: ' + err.message);
             });
           } else {
-            console.log('المستخدم موجود بالفعل');
+            console.log('User already exists');
           }
         })
         .catch(err => {
-          console.error('خطأ في جلب بيانات المستخدم:', err);
+          console.error('Error fetching user data:', err);
           alert('Error fetching user data: ' + err.message);
         });
 
-      // Function to add referral and update balance and referral_points
-      function addReferralAndReward(referralId, newUserId) {
-        if (referralId === newUserId) return; // لا تسجل نفسك كمدعو لنفسك
+      // Function to add referral
+      function addReferral(referralId, newUserId) {
+        if (referralId === newUserId) return;
 
         const referralsRef = database.ref('users/' + referralId + '/referrals');
-        const balanceRef = database.ref('users/' + referralId + '/balance');
-        const referralPointsRef = database.ref('users/' + referralId + '/referral_points');
 
         referralsRef.once('value').then(snapshot => {
           let referrals = snapshot.val() || [];
           if (!referrals.includes(newUserId)) {
             referrals.push(newUserId);
             referralsRef.set(referrals).then(() => {
-              console.log('تم إضافة الإحالة بنجاح');
-
-              // تحديث الرصيد
-              balanceRef.once('value').then(balanceSnap => {
-                const currentBalance = balanceSnap.val() || 0;
-                balanceRef.set(currentBalance + 100).then(() => {
-                  console.log('تم تحديث الرصيد بنجاح إلى:', currentBalance + 100);
-                }).catch(err => {
-                  console.error('خطأ في تحديث الرصيد:', err);
-                });
-              });
-
-              // تحديث referral_points
-              referralPointsRef.once('value').then(pointsSnap => {
-                const currentPoints = pointsSnap.val() || 0;
-                referralPointsRef.set(currentPoints + 100).then(() => {
-                  console.log('تم تحديث referral_points بنجاح إلى:', currentPoints + 100);
-                }).catch(err => {
-                  console.error('خطأ في تحديث referral_points:', err);
-                });
-              });
+              console.log('Referral added successfully');
             }).catch(err => {
-              console.error('خطأ في تحديث قائمة الإحالات:', err);
-              alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
+              console.error('Error updating referrals list:', err);
+              alert('Error updating referrals list: ' + err.message);
             });
           } else {
-            console.log('الإحالة موجودة بالفعل');
+            console.log('Referral already exists');
           }
         }).catch(err => {
-          console.error('خطأ في جلب الإحالات:', err);
-          alert('خطأ في جلب الإحالات: ' + err.message);
+          console.error('Error fetching referrals:', err);
+          alert('Error fetching referrals: ' + err.message);
         });
       }
 
-      // تسجيل المدعو الحالي كصديق (إذا لم يكن هو نفسه)
+      // Register current user as friend
       if (currentUserId && referralId && currentUserId !== referralId) {
-        addReferralAndReward(referralId, currentUserId);
+        addReferral(referralId, currentUserId);
       }
 
-      // Fetch and display referrals with loading indicator and error handling
+      // Fetch and display referrals with loading indicator
       const referralsRef = database.ref('users/' + referralId + '/referrals');
       const loadingIndicator = document.getElementById('loadingIndicator');
       const friendsCountElem = document.getElementById('friendsCount');
       const referralsBody = document.getElementById('referralsBody');
-      const referralsTotal = document.getElementById('referralsTotal');
 
-      loadingIndicator.style.display = 'block'; // Show loading indicator
+      loadingIndicator.style.display = 'block';
 
       referralsRef.on('value', snapshot => {
-        loadingIndicator.style.display = 'none'; // Hide loading indicator when data arrives
+        loadingIndicator.style.display = 'none';
         const referrals = snapshot.val() || [];
         friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
 
-        // تفريغ الجدول
+        // Clear table
         referralsBody.innerHTML = '';
 
         if (referrals.length === 0) {
           const tr = document.createElement('tr');
           const td = document.createElement('td');
-          td.colSpan = 3;
+          td.colSpan = 2;
           td.style.textAlign = 'center';
           td.textContent = "No friends invited yet.";
           tr.appendChild(td);
           referralsBody.appendChild(tr);
-          referralsTotal.textContent = "0 Mg";
         } else {
-          let count = 0;
           referrals.forEach((refId, idx) => {
             database.ref('users/' + refId).once('value')
               .then(userSnap => {
                 const userData = userSnap.val();
                 const username = userData?.username || "Unknown";
                 const tr = document.createElement('tr');
-                // رقم الإحالة
+                
+                // Referral number
                 const tdNum = document.createElement('td');
                 tdNum.textContent = (idx + 1);
                 tdNum.className = 'center';
-                // اسم المستخدم
+                
+                // Username
                 const tdUser = document.createElement('td');
                 tdUser.textContent = username + ` (ID: ${refId})`;
-                // المكافأة
-                const tdReward = document.createElement('td');
-                tdReward.textContent = "100 Mg";
-                tdReward.className = 'center';
 
                 tr.appendChild(tdNum);
                 tr.appendChild(tdUser);
-                tr.appendChild(tdReward);
                 referralsBody.appendChild(tr);
-
-                count++;
-                // عند آخر إحالة، ضع المجموع
-                if (count === referrals.length) {
-                  referralsTotal.textContent = (referrals.length * 100) + " Mg";
-                }
               })
               .catch(err => {
-                console.error('خطأ في جلب بيانات الصديق:', err);
+                console.error('Error fetching friend data:', err);
                 const tr = document.createElement('tr');
                 const td = document.createElement('td');
-                td.colSpan = 3;
+                td.colSpan = 2;
                 td.textContent = `Error fetching friend data (ID: ${refId})`;
                 tr.appendChild(td);
                 referralsBody.appendChild(tr);
               });
           });
-          if (referrals.length === 0) {
-            referralsTotal.textContent = "0 Mg";
-          }
         }
       }, err => {
-        loadingIndicator.style.display = 'none'; // Hide loading indicator on error
-        console.error('خطأ في جلب قائمة الأصدقاء:', err);
+        loadingIndicator.style.display = 'none';
+        console.error('Error fetching friends list:', err);
         alert('Error fetching friends list: ' + err.message);
       });
 
