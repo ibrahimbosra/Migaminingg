@@ -1,11 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Miga Mining App - Friends</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miga Mining App</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary: #0066cc;
@@ -21,38 +23,124 @@
       --gold: #ffd700;
       --platinum: #e5e4e2;
       --diamond: #b9f2ff;
+      --pulse: 0 0 15px rgba(0, 200, 255, 0.7);
     }
-
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
+    
     body {
-      font-family: 'Cairo', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #001a33, #003366);
       color: var(--light);
       min-height: 100vh;
-      padding: 20px 10px 70px;
+      padding: 15px 0 80px;
       text-align: center;
-      font-size: 14px;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    
+    /* Tab Content Styles */
+    .tab-content {
+      display: none;
+      padding: 10px;
     }
 
-    .invite-container {
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home Page Styles */
+    .home-container {
       max-width: 480px;
       margin: 0 auto;
+    }
+    
+    img.crypto-image {
+      width: 95%;
+      max-width: 400px;
+      margin: 15px auto 10px;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border: 2px solid rgba(182, 79, 200, 0.3);
+    }
+
+    .chart-section {
+      max-width: 450px;
+      margin: 10px auto 0;
+      padding: 0 10px;
+    }
+
+    .chart-note {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 5px;
+    }
+
+    .current-price {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    canvas {
+      background-color: rgba(0, 40, 80, 0.2);
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow: 0 0 10px rgba(182, 79, 200, 0.3);
+      width: 100% !important;
+      height: 140px !important;
+      display: block;
+      margin: auto;
+    }
+
+    .info-box {
       background-color: rgba(0, 40, 80, 0.5);
       border-radius: 10px;
-      padding: 20px 25px 25px;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 450px;
+      color: #ffffff;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-      position: relative;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+    }
+    
+    .info-box strong {
+      color: var(--accent);
+    }
+
+    /* Friends Page Styles */
+    .friends-container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    
+    .invite-container {
+      background-color: rgba(0, 40, 80, 0.5);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 0 auto 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
     .invite-container > div.title {
       font-weight: bold;
       font-size: 22px;
       margin-bottom: 10px;
+      color: var(--accent);
     }
 
     .invite-container > div.subtitle {
@@ -78,6 +166,11 @@
       box-shadow: 0 0 8px rgba(182, 79, 200, 0.5);
       max-width: 100%;
       text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .invite-link-box:hover {
+      background-color: rgba(0, 70, 140, 0.8);
     }
 
     .copy-message {
@@ -103,14 +196,16 @@
     /* Referrals table */
     .referrals-table {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 20px;
       border-collapse: collapse;
-      font-size: 15px;
+      font-size: 14px;
       background: rgba(0,51,102,0.3);
       color: #cce7ff;
+      border-radius: 8px;
+      overflow: hidden;
     }
     .referrals-table th, .referrals-table td {
-      padding: 6px 3px;
+      padding: 8px 5px;
       border: 1px solid #235;
     }
     .referrals-table th {
@@ -128,42 +223,499 @@
     .referrals-table .center {
       text-align: center;
     }
-    /* End referrals table */
-
+    
     #loadingIndicator {
       font-size: 14px;
       color: var(--accent);
       margin-top: 10px;
       font-weight: 600;
+      padding: 10px;
     }
 
+    /* Mining Page Styles */
+    .mining-container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    
+    .plan-title {
+      font-weight: bold;
+      font-size: 20px;
+      margin: 15px 0;
+      color: var(--accent);
+    }
+    
+    #wallet-message, #plan-message, #alert-message {
+      display: none;
+      position: fixed; 
+      bottom: 80px; 
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--danger);
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      z-index: 1000;
+      font-size: 14px;
+      animation: fadeInOut 3s ease-in-out;
+    }
+    
+    #alert-message {
+      top: 20%;
+      bottom: auto;
+      padding: 15px 25px;
+      border-radius: 15px;
+      font-size: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 85%;
+    }
+    
+    #ton-connect {
+      margin: 15px auto;
+      display: flex;
+      justify-content: center;
+    }
+    
+    #points-display {
+      margin: 15px 0;
+      font-size: 16px;
+      background: rgba(0, 40, 80, 0.5);
+      padding: 10px 20px;
+      border-radius: 25px;
+      display: inline-block;
+    }
+    
+    #points-display span { 
+      font-weight: bold; 
+      color: var(--accent);
+    }  
+    
+    .circle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    
+    .plan-row, .centered-row {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      width: 100%;
+    }  
+    
+    #free-claim {
+      margin-top: 25px;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+    }
+    
+    #free-claim .miga-points,
+    #free-claim .days-title {
+      display: inline;
+      margin: 0 5px;
+    }
+    
+    .plan-row { 
+      justify-content: space-between; 
+      max-width: 380px;  
+    }
+    
+    .circle-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    
+    .circle-container:hover {
+      transform: translateY(-5px);
+    }
+    
+    /* ENLARGED CIRCLE SIZE */
+    .circle-card {
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 30, 60, 0.8));
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      padding: 10px;
+      cursor: pointer;
+      border: 1px solid rgba(0, 102, 204, 0.3);
+      transition: all 0.3s ease;
+      line-height: 1.3;
+    }
+    
+    .circle-card:hover {
+      transform: scale(1.05);
+      box-shadow: var(--pulse);
+    }
+    
+    .special {
+      background: linear-gradient(135deg, rgba(182, 79, 200, 0.8), rgba(122, 40, 168, 0.8));
+    }
+    
+    .badge {
+      position: absolute; 
+      top: -23px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+      min-width: 70px;
+      text-align: center;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    
+    .bronze-badge {
+      background: var(--bronze);
+      color: #fff;
+      border: 1px solid #a65a2a;
+    }
+    
+    .silver-badge {
+      background: var(--silver);
+      color: #333;
+      border: 1px solid #a0a0a0;
+    }
+    
+    .gold-badge {
+      background: var(--gold);
+      color: #333;
+      border: 1px solid #d4af37;
+    }
+    
+    .platinum-badge {
+      background: var(--platinum);
+      color: #333;
+      border: 1px solid #c0c0c0;
+    }
+    
+    .diamond-badge {
+      background: var(--diamond);
+      color: #333;
+      border: 1px solid #a3dae9;
+    }
+    
+    .miga-points {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--accent);
+      margin: 5px 0;
+    }
+    
+    .days-title {
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .ton-amount {
+      font-size: 11px;
+      color: #ddd;
+      margin: 3px 0;
+    }
+    
+    /* Countdown inside circle */
+    .countdown-timer {
+      font-size: 11px; 
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 5px;
+      height: 15px;
+      display: none;
+    }
+    
+    .active-pulse {
+      animation: pulse 2s infinite;
+      box-shadow: var(--pulse);
+    }
+    
+    .badge-pulse {
+      animation: badgePulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    @keyframes badgePulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+    }
+    
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    
+    @keyframes coinPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    #free-claim.collected {
+      animation: pulse 0.8s 1;
+    }
+    
+    .circle-card.free {
+      width: 160px;
+      height: 50px;
+      border-radius: 30px;
+      background: rgba(60, 60, 60, 0.6);
+      cursor: not-allowed;
+    }
+    
+    .circle-card.free.active {
+      background: linear-gradient(to right, var(--success), #1e7e34);
+      cursor: pointer;
+    }
+    
+    .circle-card.free.active:hover {
+      background: linear-gradient(to right, #1e7e34, var(--success));
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 10px 0 20px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-card {
+      background: rgba(0, 40, 80, 0.5);
+      border-radius: 12px;
+      padding: 10px 15px;
+      min-width: 120px;
+      transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      background: rgba(0, 51, 102, 0.7);
+    }
+    
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* Tasks Page Styles */
+    .tasks-container {
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+    
+    .task-category {
+      margin-bottom: 25px;
+    }
+    
+    .category-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      text-align: left;
+      padding-left: 5px;
+    }
+    
+    .task-list {
+      background-color: rgba(0, 40, 80, 0.5);
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+    
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(0, 51, 102, 0.8);
+    }
+    
+    .task-item:last-child {
+      border-bottom: none;
+    }
+    
+    .task-info {
+      flex: 1;
+      text-align: left;
+      padding-right: 10px;
+    }
+    
+    .task-name {
+      font-size: 14px;
+      color: #ffffff;
+      margin-bottom: 3px;
+    }
+    
+    .task-description {
+      font-size: 12px;
+      color: #aee9f7;
+    }
+    
+    .task-reward {
+      font-size: 13px;
+      color: var(--success);
+      white-space: nowrap;
+      margin-bottom: 5px;
+    }
+    
+    .task-button {
+      background-color: var(--accent);
+      color: #001a33;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      min-width: 70px;
+      transition: background-color 0.3s;
+      font-weight: bold;
+    }
+    
+    .task-button:hover {
+      background-color: #ffaa00;
+    }
+    
+    .task-button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      color: #aaa;
+    }
+    
+    .progress-bar {
+      height: 5px;
+      background-color: rgba(0, 51, 102, 0.8);
+      border-radius: 3px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--success);
+      border-radius: 3px;
+    }
+
+    /* Leaders Page Styles */
+    .leaders-container {
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .leaderboard h2 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #ffffff;
+    }
+
+    .leader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background-color: rgba(0, 40, 80, 0.5);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+      font-size: 14px;
+    }
+
+    .rank {
+      font-weight: bold;
+      color: var(--accent);
+      width: 30px;
+    }
+
+    .name {
+      flex-grow: 1;
+      text-align: left;
+      padding: 0 10px;
+      color: #ffffff;
+    }
+
+    .amount {
+      font-weight: bold;
+      color: var(--success);
+      font-size: 14px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    
+    .user-rank {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 40, 80, 0.5);
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    
+    .user-rank span {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
-      left: 0;
-      right: 0;
       width: 100%;
       background: rgba(10, 30, 50, 0.95);
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
+      padding: 10px 0;
       border-top: 1px solid rgba(0, 51, 102, 0.8);
       z-index: 999;
-      box-sizing: border-box;
+      backdrop-filter: blur(5px);
     }
 
     .nav-item {
       text-align: center;
       color: #aaa;
-      font-size: 10px;
+      font-size: 12px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
-      padding: 3px 10px;
+      gap: 3px;
+      padding: 5px 10px;
       flex: 1;
       max-width: 20%;
+      transition: all 0.3s ease;
     }
 
     .nav-item i {
@@ -172,65 +724,469 @@
 
     .nav-item.active {
       color: var(--accent);
+      transform: translateY(-5px);
+    }
+    
+    .nav-item.active i {
+      animation: pulse 1.5s infinite;
+    }
+
+    .nav-item:hover {
+      color: #fff;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      body {
+        font-size: 15px;
+        padding: 12px 0 75px;
+      }
+      
+      .plan-title {
+        font-size: 18px;
+      }
+      
+      /* Adjusted circle size for mobile */
+      .circle-card {
+        width: 120px;
+        height: 120px;
+        font-size: 11px;
+      }
+      
+      .badge {
+        font-size: 11px;
+        min-width: 65px;
+        top: -21px;
+      }
+      
+      .stat-card {
+        min-width: 110px;
+        padding: 8px 12px;
+      }
+      
+      .nav-item i {
+        font-size: 18px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      body {
+        font-size: 14px;
+      }
+      
+      /* Further adjusted circle size for small mobile */
+      .circle-card {
+        width: 100px;
+        height: 100px;
+        font-size: 10px;
+      }
+      
+      .badge {
+        font-size: 10px;
+        min-width: 60px;
+        top: -19px;
+      }
+      
+      .stat-card {
+        min-width: 100px;
+        padding: 7px 10px;
+      }
+      
+      .nav-item i {
+        font-size: 16px;
+      }
     }
   </style>
-
-  <!-- Firebase libraries -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
+  <!-- Home Tab Content -->
+  <div id="home-tab" class="tab-content">
+    <div class="home-container">
+      <img class="crypto-image" src="https://i.ibb.co/vvXPf862/IMG-20250603-113627-516.jpg" alt="Miga Mining App">
 
-  <div id="friends-tab" class="tab-content active">
-    <div class="invite-container">
-      <div class="title">Invite Friends</div>
-      <div class="subtitle">Invite friends to join Miga Mining</div>
-      <div class="description">
-        Earn 100 Miga for each friend you invite!
+      <div class="chart-section">
+        <div class="chart-note">Real-time Miga mining progress</div>
+        <div class="current-price" id="currentMining">Mined: ...</div>
+        <canvas id="fakeChart" width="400" height="160"></canvas>
       </div>
 
-      <div id="inviteLink" class="invite-link-box" title="Click to copy link">
-        Loading invite link...
+      <div class="info-box">
+        <strong>What is Miga?</strong><br>
+        Miga is a token mined by users. Total supply is capped at 25 Billion.<br><br>
+        <strong>How to get it?</strong><br>
+        Ready to earn? Choose your plan and start mining Miga now!<br><br>
+        <strong>Key Features:</strong>
+        <ul style="margin: 10px 0 0 20px;">
+          <li>Multiple mining plans with different durations</li>
+          <li>Referral program to earn extra Miga</li>
+          <li>Daily tasks and challenges</li>
+          <li>Leaderboard to track top miners</li>
+        </ul>
       </div>
-      <div id="copyMsg" class="copy-message">Link copied!</div>
-
-      <div id="friendsCount">Friends invited: <strong>0</strong></div>
-      <div id="loadingIndicator" style="display:none;">Loading friends...</div>
-      <!-- Referrals table -->
-      <div style="overflow-x:auto;">
-        <table class="referrals-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Username</th>
-              <th>Reward</th>
-            </tr>
-          </thead>
-          <tbody id="referralsBody">
-            <!-- Data will be populated here -->
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" class="center">Total</td>
-              <td id="referralsTotal" class="center">0 Mg</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <!-- End table -->
     </div>
   </div>
 
+  <!-- Friends Tab Content -->
+  <div id="friends-tab" class="tab-content">
+    <div class="friends-container">
+      <div class="invite-container">
+        <div class="title">Invite Friends</div>
+        <div class="subtitle">Invite friends to join Miga Mining</div>
+        <div class="description">
+          Earn 100 Miga for each friend you invite!
+        </div>
+
+        <div id="inviteLink" class="invite-link-box" title="Click to copy link">
+          https://t.me/Migamining_bot?start=123456789
+        </div>
+        <div id="copyMsg" class="copy-message">Link copied!</div>
+
+        <div id="friendsCount">Friends invited: <strong>3</strong></div>
+        <div id="loadingIndicator" style="display:none;">Loading friends...</div>
+        <!-- Referrals table -->
+        <div style="overflow-x:auto;">
+          <table class="referrals-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Reward</th>
+              </tr>
+            </thead>
+            <tbody id="referralsBody">
+              <tr>
+                <td class="center">1</td>
+                <td>user_123 (ID: 456789)</td>
+                <td class="center">100 Mg</td>
+              </tr>
+              <tr>
+                <td class="center">2</td>
+                <td>crypto_miner (ID: 987654)</td>
+                <td class="center">100 Mg</td>
+              </tr>
+              <tr>
+                <td class="center">3</td>
+                <td>blockchain_fan (ID: 654321)</td>
+                <td class="center">100 Mg</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="center">Total</td>
+                <td id="referralsTotal" class="center">300 Mg</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <!-- End table -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Mining Tab Content -->
+  <div id="mining-tab" class="tab-content active">
+    <div class="mining-container">
+      <div class="plan-title">
+        <i class="fas fa-cube"></i> Miga Mining
+      </div>
+      <div id="ton-connect"></div>
+      
+      <!-- Stats bar at the top -->
+      <div class="stats-bar"> 
+        <div class="stat-card"> 
+          <div class="stat-label">
+            Total Mg
+          </div> 
+          <div class="stat-value">
+            <span id="points-total">1,254.75</span> Mg
+          </div> 
+        </div> 
+        <div class="stat-card"> 
+          <div class="stat-label">
+            Mining Speed
+          </div> 
+          <div class="stat-value">
+            <span id="points-rate">0.0085</span> Mg/s
+          </div> 
+        </div> 
+        <div class="stat-card"> 
+          <div class="stat-label">
+            Active Plans
+          </div> 
+          <div class="stat-value">
+            <span id="active-plans">2</span>
+          </div> 
+        </div> 
+      </div>
+      
+      <div class="plan-title">
+        Choose Your Mining Plan
+      </div>
+      <div class="circle-wrapper"> 
+        <div class="plan-row"> 
+          <div class="circle-container"> 
+            <div class="badge bronze-badge">
+              Bronze
+            </div> 
+            <div class="circle-card" data-days="7" onclick="handlePlanClick(0.5,7,1,this)"> 
+              <!-- New arrangement inside circle -->
+              <div class="days-title">
+                7 Days
+              </div> 
+              <div class="ton-amount">
+                0.5 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-7d"></div> 
+              <div class="speed-multiplier">
+                1× Speed
+              </div> 
+            </div> 
+          </div> 
+          <div class="circle-container"> 
+            <div class="badge silver-badge">
+              Silver
+            </div> 
+            <div class="circle-card" data-days="15" onclick="handlePlanClick(0.75,15,1.5,this)"> 
+              <div class="days-title">
+                15 Days
+              </div> 
+              <div class="ton-amount">
+                0.75 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-15d"></div> 
+              <div class="speed-multiplier">
+                1.5× Speed
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+        <div class="centered-row"> 
+          <div class="circle-container"> 
+            <div class="badge gold-badge">
+              Gold
+            </div> 
+            <div class="circle-card special" data-days="30" onclick="handlePlanClick(1,30,2,this)"> 
+              <div class="days-title">
+                30 Days
+              </div> 
+              <div class="ton-amount">
+                1 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-30d"></div> 
+              <div class="speed-multiplier">
+                2× Speed
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+        <div class="plan-row"> 
+          <div class="circle-container"> 
+            <div class="badge platinum-badge">
+              Platinum
+            </div> 
+            <div class="circle-card" data-days="60" onclick="handlePlanClick(1.5,60,3,this)"> 
+              <div class="days-title">
+                60 Days
+              </div> 
+              <div class="ton-amount">
+                1.5 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-60d"></div> 
+              <div class="speed-multiplier">
+                3× Speed
+              </div> 
+            </div> 
+          </div> 
+          <div class="circle-container"> 
+            <div class="badge diamond-badge">
+              Diamond
+            </div> 
+            <div class="circle-card" data-days="90" onclick="handlePlanClick(2,90,4,this)"> 
+              <div class="days-title">
+                90 Days
+              </div> 
+              <div class="ton-amount">
+                2 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-90d"></div> 
+              <div class="speed-multiplier">
+                4× Speed
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+        <div class="centered-row"> 
+          <div id="free-claim" class="circle-card free active" onclick="collectFreePoints(this)"> 
+            <span class="miga-points">100</span> 
+            <span class="days-title">Free Claim</span> 
+          </div> 
+        </div> 
+      </div>
+      
+      <div id="wallet-message">
+        <i class="fas fa-wallet"></i> Please connect your wallet first
+      </div>
+      <div id="plan-message">
+        <i class="fas fa-info-circle"></i> This plan is already active
+      </div>
+      <div id="alert-message"></div>
+    </div>
+  </div>
+
+  <!-- Tasks Tab Content -->
+  <div id="tasks-tab" class="tab-content">
+    <div class="tasks-container">
+      
+      <!-- Daily Tasks -->
+      <div class="task-category">
+        <div class="category-title">Daily Tasks</div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">Daily Login</div>
+              <div class="task-description">Sign in daily to claim reward</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+50 Miga</div>
+              <button class="task-button">Claim</button>
+            </div>
+          </div>
+          
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">Watch Video</div>
+              <div class="task-description">Watch a short video</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+25 Miga</div>
+              <button class="task-button">Start</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Weekly Tasks -->
+      <div class="task-category">
+        <div class="category-title">Weekly Challenges</div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">Active Miner</div>
+              <div class="task-description">Login 5 days this week</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+200 Miga</div>
+              <button class="task-button" disabled>3/5</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Referral Tasks -->
+      <div class="task-category">
+        <div class="category-title">Invite Friends</div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">First Referral</div>
+              <div class="task-description">Invite your first friend</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+100 Miga</div>
+              <button class="task-button">Claim</button>
+            </div>
+          </div>
+          
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">Referral Master</div>
+              <div class="task-description">Invite 5 friends</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+1000 Miga</div>
+              <button class="task-button" disabled>3/5</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Special Tasks -->
+      <div class="task-category">
+        <div class="category-title">Special Missions</div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-name">Join Telegram</div>
+              <div class="task-description">Join our official channel</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="task-reward">+500 Miga</div>
+              <button class="task-button">Join</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaders Tab Content -->
+  <div id="leaders-tab" class="tab-content">
+    <div class="leaders-container">
+      <div class="leaderboard">
+        <h2>Top Miners</h2>
+        <div id="leadersList"></div>
+        
+        <div class="user-rank">
+          Your rank: <span>#42</span> | Total Miga: <span>1,254.75</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
   <div class="bottom-nav">  
     <div class="nav-item" data-tab="home-tab">
       <i class="fas fa-home"></i>
       <span>Home</span>
     </div>
-    <div class="nav-item active" data-tab="friends-tab">
+    <div class="nav-item" data-tab="friends-tab">
       <i class="fas fa-user-friends"></i>
       <span>Friends</span>
     </div>
-    <div class="nav-item" data-tab="mining-tab">
+    <div class="nav-item active" data-tab="mining-tab">
       <i class="fas fa-digging"></i>
       <span>Mining</span>
     </div>
@@ -244,195 +1200,503 @@
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script>
     // Tab Switching Functionality
     document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('click', function () {
+      item.addEventListener('click', function() {
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(nav => {
+          nav.classList.remove('active');
+        });
+        
+        // Add active class to clicked nav item
+        this.classList.add('active');
+        
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        
+        // Show the selected tab
         const tabId = this.getAttribute('data-tab');
-        window.location.href = tabId + '.html';
+        document.getElementById(tabId).classList.add('active');
+        
+        // Initialize specific tab if needed
+        if(tabId === 'home-tab') initHomePage();
+        else if(tabId === 'friends-tab') initFriendsPage();
+        else if(tabId === 'leaders-tab') initLeadersPage();
       });
     });
-
-    // Copy to clipboard functionality
-    const inviteLink = document.getElementById('inviteLink');
-    const copyMsg = document.getElementById('copyMsg');
-
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        copyMsg.classList.add('visible');
-        setTimeout(() => {
-          copyMsg.classList.remove('visible');
-        }, 2000);
-      }).catch(err => {
-        alert('Copy failed: ' + err);
-      });
-    }
-
-    inviteLink.addEventListener('click', () => {
-      copyText(inviteLink.textContent.trim());
-    });
-  </script>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
-      authDomain: "migamining-c6c20.firebaseapp.com",
-      databaseURL: "https://migamining-c6c20-default-rtdb.firebaseio.com",
-      projectId: "migamining-c6c20",
-      storageBucket: "migamining-c6c20.appspot.com",
-      messagingSenderId: "737327385751",
-      appId: "1:737327385751:web:68eb8fd845caa7cad02dd2",
-      measurementId: "G-VXPKJSHPRC"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
-
-    const startParam = getQueryParam('start');
-    const referralId = startParam || (window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
-    const currentUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-
-    if (referralId) {
-      const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
-      inviteLink.textContent = referralLink;
-
-      // Register user if not exists with error handling
-      const userRef = database.ref('users/' + referralId);
-      userRef.once('value')
-        .then(snapshot => {
-          if (!snapshot.exists()) {
-            userRef.set({
-              referrals: [],
-              username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
-            }).then(() => {
-              console.log('User created successfully');
-            }).catch(err => {
-              console.error('Error creating user:', err);
-              alert('Error saving your data: ' + err.message);
-            });
-          } else {
-            console.log('User already exists');
-          }
-        })
-        .catch(err => {
-          console.error('Error fetching user data:', err);
-          alert('Error fetching user data: ' + err.message);
-        });
-
-      // Function to add referral
-      function addReferral(referralId, newUserId) {
-        if (referralId === newUserId) return;
-
-        const referralsRef = database.ref('users/' + referralId + '/referrals');
-
-        referralsRef.once('value').then(snapshot => {
-          let referrals = snapshot.val() || [];
-          if (!referrals.includes(newUserId)) {
-            referrals.push(newUserId);
-            referralsRef.set(referrals).then(() => {
-              console.log('Referral added successfully');
-            }).catch(err => {
-              console.error('Error updating referrals list:', err);
-              alert('Error updating referrals list: ' + err.message);
-            });
-          } else {
-            console.log('Referral already exists');
-          }
-        }).catch(err => {
-          console.error('Error fetching referrals:', err);
-          alert('Error fetching referrals: ' + err.message);
-        });
-      }
-
-      // Register current user as friend
-      if (currentUserId && referralId && currentUserId !== referralId) {
-        addReferral(referralId, currentUserId);
-      }
-
-      // Fetch and display referrals with loading indicator
-      const referralsRef = database.ref('users/' + referralId + '/referrals');
-      const loadingIndicator = document.getElementById('loadingIndicator');
-      const friendsCountElem = document.getElementById('friendsCount');
-      const referralsBody = document.getElementById('referralsBody');
-      const referralsTotal = document.getElementById('referralsTotal');
-
-      loadingIndicator.style.display = 'block';
-
-      referralsRef.on('value', snapshot => {
-        loadingIndicator.style.display = 'none';
-        const referrals = snapshot.val() || [];
-        friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
-
-        // Clear table
-        referralsBody.innerHTML = '';
-
-        if (referrals.length === 0) {
-          const tr = document.createElement('tr');
-          const td = document.createElement('td');
-          td.colSpan = 3;
-          td.style.textAlign = 'center';
-          td.textContent = "No friends invited yet.";
-          tr.appendChild(td);
-          referralsBody.appendChild(tr);
-          referralsTotal.textContent = "0 Mg";
-        } else {
-          referrals.forEach((refId, idx) => {
-            database.ref('users/' + refId).once('value')
-              .then(userSnap => {
-                const userData = userSnap.val();
-                const username = userData?.username || "Unknown";
-                const tr = document.createElement('tr');
-                
-                // Referral number
-                const tdNum = document.createElement('td');
-                tdNum.textContent = (idx + 1);
-                tdNum.className = 'center';
-                
-                // Username
-                const tdUser = document.createElement('td');
-                tdUser.textContent = username + ` (ID: ${refId})`;
-                
-                // Reward column (100 Mg for each referral)
-                const tdReward = document.createElement('td');
-                tdReward.textContent = "100 Mg";
-                tdReward.className = 'center';
-
-                tr.appendChild(tdNum);
-                tr.appendChild(tdUser);
-                tr.appendChild(tdReward);
-                referralsBody.appendChild(tr);
-
-                // Update total rewards
-                referralsTotal.textContent = (referrals.length * 100) + " Mg";
-              })
-              .catch(err => {
-                console.error('Error fetching friend data:', err);
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = 3;
-                td.textContent = `Error fetching friend data (ID: ${refId})`;
-                tr.appendChild(td);
-                referralsBody.appendChild(tr);
-              });
-          });
+    
+    // Initialize the active tab
+    document.getElementById('mining-tab').classList.add('active');
+    
+    // Home Page Scripts
+    function initHomePage() {
+      const totalSupply = 25000000000;
+      const miningStartDate = new Date('2025-05-05T00:00:00Z');
+      const secondsInSixMonths = 6 * 30 * 24 * 60 * 60;
+      const miningSpeedPerSecond = totalSupply / secondsInSixMonths;
+    
+      async function fetchServerTime() {
+        try {
+          // Simulate server time fetch
+          return new Date();
+        } catch {
+          return new Date();
         }
-      }, err => {
-        loadingIndicator.style.display = 'none';
-        console.error('Error fetching friends list:', err);
-        alert('Error fetching friends list: ' + err.message);
+      }
+    
+      async function calculateCurrentMining() {
+        const now = await fetchServerTime();
+        let diffSeconds = Math.floor((now - miningStartDate) / 1000);
+        if (diffSeconds < 0) diffSeconds = 0;
+    
+        let mined = miningSpeedPerSecond * diffSeconds;
+        return mined > totalSupply ? totalSupply : mined;
+      }
+    
+      const currentMiningElem = document.getElementById('currentMining');
+    
+      async function updateMining() {
+        const mined = await calculateCurrentMining();
+        currentMiningElem.textContent = 'Mined: ' + mined.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' / 25,000,000,000';
+        return mined;
+      }
+    
+      updateMining();
+      setInterval(updateMining, 10000);
+    
+      const ctx = document.getElementById('fakeChart').getContext('2d');
+      const initialData = [10000, 30000, 80000, 150000, 400000, 1000000, 3000000, 10000000];
+    
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array(initialData.length).fill(''),
+          datasets: [{
+            label: '',
+            data: initialData,
+            borderColor: '#b64fc8',
+            backgroundColor: 'rgba(182, 79, 200, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 0,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { display: false },
+              grid: { color: 'rgba(0, 51, 102, 0.2)' }
+            },
+            y: {
+              display: false,
+              grid: { color: 'rgba(0, 51, 102, 0.2)' }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
       });
-
-    } else {
-      inviteLink.textContent = "Referral link not available.";
     }
+    
+    // Friends Page Scripts
+    function initFriendsPage() {
+      // Copy to clipboard functionality
+      const inviteLink = document.getElementById('inviteLink');
+      const copyMsg = document.getElementById('copyMsg');
+    
+      function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          copyMsg.classList.add('visible');
+          setTimeout(() => {
+            copyMsg.classList.remove('visible');
+          }, 2000);
+        }).catch(err => {
+          alert('Copy failed: ' + err);
+        });
+      }
+    
+      inviteLink.addEventListener('click', () => {
+        copyText(inviteLink.textContent.trim());
+      });
+    }
+    
+    // Mining Page Scripts
+    const FREE_DAILY_LIMIT = 100;
+    const FREE_PERIOD_MS   = 24*3600*1000;  // 24 hours
+    const DAILY_POINTS_PER_PLAN = 500; // points per plan per day
+    
+    // Free bonus data
+    let freeData = JSON.parse(localStorage.getItem("freeData")) || {
+      lastReset: 0,
+      remaining: FREE_DAILY_LIMIT
+    };
+    
+    // Points and plans data
+    let pointsData = JSON.parse(localStorage.getItem("pointsData")) || {
+      totalPoints: 1254.75,
+      activePlans: [
+        {days: 7, multiplier: 1, startTime: Date.now() - 2*86400000, accumulatedPoints: 200.25},
+        {days: 30, multiplier: 2, startTime: Date.now() - 5*86400000, accumulatedPoints: 850.50}
+      ],
+      hasEverActivatedPlan: true,
+      dailyPoints: 150.25,
+      weeklyPoints: 750.75,
+      monthlyPoints: 1254.75,
+      allTimePoints: 1254.75
+    };
+    
+    let globalRate = 0;
+    let walletConnected = false;
+    
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: "https://ibrahimbosra.github.io/Pay/tonconnect-manifest.json",
+      buttonRootId: "ton-connect",
+      language: "en"
+    });
+    
+    // Update wallet status
+    tonConnectUI.onStatusChange(info => {
+      walletConnected = !!(info && info.account);
+      if (!walletConnected) {
+        document.getElementById("wallet-message").style.display = "block";
+      }
+    });
+    
+    function initPoints() {
+      recalcGlobalRate();
+      updatePointsDisplay();
+      resetFreeIfNeeded();
+      toggleFreeClaim();
+      updateStats();
+      
+      // Start timers for active plans
+      pointsData.activePlans.forEach(plan => {
+        const el = document.querySelector(`.circle-card[data-days="${plan.days}"]`);
+        if (el) startMining(plan, el);
+      });
+    }
+    
+    // Recalculate global rate
+    function recalcGlobalRate() {
+      globalRate = pointsData.activePlans.reduce((sum, plan) => {
+        return sum + (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
+      }, 0);
+    }
+    
+    // Update points display with decimals
+    function updatePointsDisplay() {
+      // Display points with 4 decimals for total Mg
+      document.getElementById("points-total").textContent = pointsData.totalPoints.toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById("points-rate").textContent = globalRate.toFixed(4);
+    }
+    
+    // Update stats
+    function updateStats() {
+      document.getElementById("active-plans").textContent = pointsData.activePlans.length;
+    }
+    
+    // Save points data
+    function savePointsData() {
+      localStorage.setItem("pointsData", JSON.stringify(pointsData));
+    }
+    
+    // Reset daily bonus if needed
+    function resetFreeIfNeeded() {
+      const now = Date.now();
+      if (now - freeData.lastReset >= FREE_PERIOD_MS) {
+        freeData.lastReset = now;
+        freeData.remaining = FREE_DAILY_LIMIT;
+        localStorage.setItem("freeData", JSON.stringify(freeData));
+      }
+    }
+    
+    // Update free claim button state
+    function toggleFreeClaim() {
+      resetFreeIfNeeded();
+      const btn = document.getElementById("free-claim");
+      const now = Date.now();
+      const timeLeft = (freeData.lastReset + FREE_PERIOD_MS) - now;
+      
+      if (pointsData.activePlans.length > 0 && freeData.remaining > 0) {
+        btn.classList.add("active");
+        btn.classList.remove("disabled");
+        btn.querySelector(".miga-points")
+           .innerText = `${freeData.remaining}`;
+        btn.querySelector(".days-title")
+           .innerText = `Free Claim`;
+      } else {
+        btn.classList.remove("active");
+        btn.classList.add("disabled");
+        if (freeData.remaining <= 0) {
+          // Show refill timer without "Locked" text
+          const h = Math.floor(timeLeft/3600000);
+          const m = Math.floor((timeLeft%3600000)/60000);
+          const s = Math.floor((timeLeft%60000)/1000);
+          btn.querySelector(".miga-points")
+             .innerText = `Wait ${h}h ${m}m ${s}s`;
+          btn.querySelector(".days-title")
+             .innerText = ``;
+        } else {
+          btn.querySelector(".miga-points").innerText = `Bonus`;
+          btn.querySelector(".days-title")
+             .innerText = `Available`;
+        }
+      }
+    }
+    
+    // Claim free points with double message prevention
+    function collectFreePoints(el) {
+      // Prevent multiple executions
+      if (collectFreePoints.locked) return;
+      collectFreePoints.locked = true;
+      setTimeout(() => { collectFreePoints.locked = false; }, 1000);
+      
+      // Check if user has activated any plan before
+      if (!pointsData.hasEverActivatedPlan) {
+        document.getElementById('alert-message').innerHTML = '<i class="fas fa-exclamation-triangle"></i> You need to activate at least one plan first';
+        document.getElementById('alert-message').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('alert-message').style.display = 'none';
+        }, 5000);
+        return;
+      }
+      
+      if (!el.classList.contains("active")) {
+        toggleFreeClaim();
+        return;
+      }
+      
+      const bonus = 1;  // One point per click
+      freeData.remaining = Math.max(0, freeData.remaining - bonus);
+      freeData.lastReset = freeData.lastReset;
+      localStorage.setItem("freeData", JSON.stringify(freeData));
+      
+      pointsData.totalPoints += bonus;
+      pointsData.allTimePoints += bonus;
+      pointsData.dailyPoints += bonus;
+      savePointsData();
+      updatePointsDisplay();
+      
+      // Create coin animation
+      createCoinAnimation(el);
+      
+      el.classList.add("collected");
+      setTimeout(() => el.classList.remove("collected"), 800);
+      
+      toggleFreeClaim();
+    }
+    
+    // Create coin animation when collecting free points
+    function createCoinAnimation(element) {
+      const coin = document.createElement("div");
+      coin.innerHTML = '<i class="fas fa-coins" style="color: gold; font-size: 20px;"></i>';
+      coin.style.position = "absolute";
+      coin.style.left = `${element.getBoundingClientRect().left + element.offsetWidth/2}px`;
+      coin.style.top = `${element.getBoundingClientRect().top}px`;
+      coin.style.zIndex = "1000";
+      coin.style.opacity = "1";
+      coin.style.transition = "all 1s ease";
+      document.body.appendChild(coin);
+      
+      // Animate coin to points display
+      setTimeout(() => {
+        const pointsDisplay = document.getElementById("points-total");
+        const pointsRect = pointsDisplay.getBoundingClientRect();
+        coin.style.left = `${pointsRect.left}px`;
+        coin.style.top = `${pointsRect.top}px`;
+        coin.style.opacity = "0";
+        coin.style.transform = "scale(0.5)";
+      }, 100);
+      
+      // Remove coin after animation
+      setTimeout(() => {
+        coin.remove();
+      }, 1100);
+    }
+    
+    function showPlanMessage() {
+      document.getElementById("plan-message").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("plan-message").style.display = "none";
+      }, 3000);
+    }
+    
+    function handlePlanClick(priceTon, days, multiplier, el) {
+      if (!walletConnected) {
+        tonConnectUI.openModal();
+        document.getElementById("wallet-message").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("wallet-message").style.display = "none";
+        }, 5000);
+        return;
+      }
+      
+      if (pointsData.activePlans.find(p => p.days === days)) {
+        document.getElementById("plan-message").innerHTML = 
+          `<i class="fas fa-info-circle"></i> This plan is already active!`;
+        showPlanMessage();
+        return;
+      }
+      
+      const plan = {
+        days, multiplier,
+        startTime: Date.now(),
+        accumulatedPoints: 0
+      };
+      
+      pointsData.activePlans.push(plan);
+      pointsData.hasEverActivatedPlan = true; 
+      savePointsData();
+      recalcGlobalRate();
+      updatePointsDisplay();
+      updateStats();
+      startMining(plan, el);
+      toggleFreeClaim();
+      
+      window.location.href =
+        `ton://transfer/UQADR_wO9cnAQYUGErMlhP57EFWK78aubu20uxUw-n63Tuo4?amount=${
+          Math.floor(priceTon*1e9)
+        }&text=Miga%20Mining`;
+    }
+    
+    function startMining(plan, el) {
+      el.classList.add("active-pulse");
+      // Also add pulse to the badge
+      const badge = el.parentElement.querySelector('.badge');
+      if (badge) badge.classList.add("badge-pulse");
+      
+      const totalSec = plan.days * 86400;
+      let elapsed = Math.floor((Date.now() - plan.startTime)/1000);
+      const cd = el.querySelector(".countdown-timer");
+      const mp = el.querySelector(".miga-points");
+            
+      if (el._timer) clearInterval(el._timer);
+      
+      // Show the countdown element
+      cd.style.display = "block";
+      
+      el._timer = setInterval(() => {
+        elapsed++;
+        const rem = totalSec - elapsed;
+        
+        if (rem < 0) {
+          clearInterval(el._timer);
+          el.classList.remove("active-pulse");
+          if (badge) badge.classList.remove("badge-pulse");
+          cd.innerText = "Completed";
+          pointsData.activePlans =
+            pointsData.activePlans.filter(p => p.days !== plan.days);
+          savePointsData();
+          recalcGlobalRate();
+          updatePointsDisplay();
+          updateStats();
+          toggleFreeClaim();
+          
+          // Hide countdown after 5 seconds
+          setTimeout(() => {
+            cd.style.display = "none";
+          }, 5000);
+          return;
+        }
+        
+        const d = Math.floor(rem/86400),
+              h = Math.floor((rem%86400)/3600),
+              m = Math.floor((rem%3600)/60),
+              s = rem%60;
+              
+        cd.innerText = `${d}d ${h}h ${m}m ${s}s`;
+        plan.accumulatedPoints += (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
+        
+        // Display points with 2 decimals and "mg" unit
+        mp.innerText = `${plan.accumulatedPoints.toFixed(2)} mg`;
+        savePointsData();
+      }, 1000);
+    }
+    
+    // Tasks Page Scripts
+    document.querySelectorAll('.task-button').forEach(button => {
+      button.addEventListener('click', function() {
+        if(!this.disabled) {
+          const originalText = this.textContent;
+          this.textContent = "Claimed!";
+          this.disabled = true;
+          
+          // Reset after 2 seconds for demo purposes
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 2000);
+        }
+      });
+    });
+    
+    // Leaders Page Scripts
+    function initLeadersPage() {
+      const startDate = new Date('2025-05-05T00:00:00Z');
+      const today = new Date();
+      const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    
+      const leaders = [
+        { name: 'Evelyn', base: 22773973 },
+        { name: 'crypto_boy88', base: 17974026 },
+        { name: 'Юлия', base: 14865206 },
+        { name: 'Андрей', base: 13964927 },
+        { name: 'رنا', base: 11865962 },
+        { name: 'Raj', base: 8484001 },
+        { name: 'Li Wei', base: 7778291 },
+        { name: 'Olivia', base: 7007971 },
+        { name: 'ghost2025', base: 6800549 },
+        { name: 'سعيد', base: 6485428 },
+        { name: 'Arjun', base: 6085391 },
+        { name: 'Елена', base: 5563901 },
+        { name: 'user_01', base: 5284061 },
+        { name: 'Deepa', base: 4953091 },
+        { name: 'Rakesh', base: 4769164 },
+        { name: 'Isabella', base: 4384091 },
+        { name: 'محمد', base: 3272901 },
+        { name: 'Xu Lei', base: 1996380 },
+        { name: 'Mia', base: 1585395 },
+        { name: 'bitBoss', base: 1256842 }
+      ];
+    
+      leaders.forEach(leader => {
+        leader.rate = 5000 + Math.floor(Math.random() * 5001);
+      });
+    
+      leaders.forEach(leader => {
+        leader.total = leader.base + (leader.rate * elapsedDays);
+      });
+    
+      leaders.sort((a, b) => b.total - a.total);
+    
+      const leadersList = document.getElementById('leadersList');
+      leadersList.innerHTML = '';
+      
+      leaders.forEach((leader, i) => {
+        const div = document.createElement('div');
+        div.className = 'leader';
+        div.innerHTML = `
+          <div class="rank">#${i + 1}</div>
+          <div class="name">${leader.name}</div>
+          <div class="amount">${leader.total.toLocaleString()}</div>
+        `;
+        leadersList.appendChild(div);
+      });
+    }
+    
+    // Initialize the mining page
+    document.addEventListener("DOMContentLoaded", function() {
+      initPoints();
+      initLeadersPage();
+    });
   </script>
-
 </body>
 </html>
