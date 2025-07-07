@@ -186,7 +186,7 @@
       <div class="title">Invite Friends</div>
       <div class="subtitle">Invite friends to join Miga Mining</div>
       <div class="description">
-        Invite your friends to join the app and grow your network.
+        Earn 100 Miga for each friend you invite!
       </div>
 
       <div id="inviteLink" class="invite-link-box" title="Click to copy link">
@@ -399,9 +399,9 @@
                 const tdUser = document.createElement('td');
                 tdUser.textContent = username + ` (ID: ${refId})`;
                 
-                // Reward column (fixed value)
+                // Reward column (100 Mg for each referral)
                 const tdReward = document.createElement('td');
-                tdReward.textContent = "0 Mg";
+                tdReward.textContent = "100 Mg";
                 tdReward.className = 'center';
 
                 tr.appendChild(tdNum);
@@ -409,8 +409,8 @@
                 tr.appendChild(tdReward);
                 referralsBody.appendChild(tr);
 
-                // Update total to 0
-                referralsTotal.textContent = "0 Mg";
+                // Update total rewards
+                referralsTotal.textContent = (referrals.length * 100) + " Mg";
               })
               .catch(err => {
                 console.error('Error fetching friend data:', err);
