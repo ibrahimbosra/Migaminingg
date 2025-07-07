@@ -36,33 +36,33 @@
       background: linear-gradient(135deg, #001a33, #003366);
       color: var(--light);
       min-height: 100vh;
-      padding: 10px 0 70px;
+      padding: 15px 0 80px;
       text-align: center;
-      font-size: 14px;
+      font-size: 16px;
       overflow-x: hidden;
     }
     
     /* Mining Page Styles */
     .plan-title {
       font-weight: bold;
-      font-size: 16px;
-      margin: 8px 0; /* Reduced from 10px */
+      font-size: 20px;
+      margin: 15px 0;
       color: var(--accent);
     }
     
     #wallet-message, #plan-message, #alert-message {
       display: none;
       position: fixed; 
-      bottom: 70px; 
+      bottom: 80px; 
       left: 50%;
       transform: translateX(-50%);
       background: rgba(255, 255, 255, 0.9);
       color: var(--danger);
-      padding: 8px 15px;
-      border-radius: 20px;
+      padding: 10px 20px;
+      border-radius: 25px;
       font-weight: bold;
       z-index: 1000;
-      font-size: 12px;
+      font-size: 14px;
       animation: fadeInOut 3s ease-in-out;
     }
     
@@ -71,23 +71,23 @@
       bottom: auto;
       padding: 15px 25px;
       border-radius: 15px;
-      font-size: 14px;
+      font-size: 16px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      max-width: 80%;
+      max-width: 85%;
     }
     
     #ton-connect {
-      margin: 10px auto;
+      margin: 15px auto;
       display: flex;
       justify-content: center;
     }
     
     #points-display {
-      margin: 10px 0;
-      font-size: 14px;
+      margin: 15px 0;
+      font-size: 16px;
       background: rgba(0, 40, 80, 0.5);
-      padding: 8px 15px;
-      border-radius: 20px;
+      padding: 10px 20px;
+      border-radius: 25px;
       display: inline-block;
     }
     
@@ -100,8 +100,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px; /* Reduced from 8px */
-      padding: 8px; /* Reduced from 10px */
+      gap: 15px;
+      padding: 15px;
       max-width: 100%;
       margin: 0 auto;
     }
@@ -109,29 +109,29 @@
     .plan-row, .centered-row {
       display: flex;
       justify-content: center;
-      gap: 5px; /* Reduced from 8px */
+      gap: 15px;
       width: 100%;
     }  
     
     #free-claim {
-      margin-top: 15px; /* Reduced from 20px */
+      margin-top: 25px;
       white-space: nowrap;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      padding: 0 15px;
+      padding: 0 20px;
     }
     
     #free-claim .miga-points,
     #free-claim .days-title {
       display: inline;
-      margin: 0 3px;
+      margin: 0 5px;
     }
     
     .plan-row { 
       justify-content: space-between; 
-      max-width: 320px;  
+      max-width: 380px;  
     }
     
     .circle-container {
@@ -146,21 +146,22 @@
       transform: translateY(-5px);
     }
     
+    /* ENLARGED CIRCLE SIZE */
     .circle-card {
-      width: 85px;
-      height: 85px;
+      width: 140px;
+      height: 140px;
       background: linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(0, 30, 60, 0.8));
       border-radius: 50%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-size: 10px;
-      padding: 6px;
+      font-size: 12px;
+      padding: 10px;
       cursor: pointer;
       border: 1px solid rgba(0, 102, 204, 0.3);
       transition: all 0.3s ease;
-      line-height: 1.2;
+      line-height: 1.3;
     }
     
     .circle-card:hover {
@@ -174,15 +175,16 @@
     
     .badge {
       position: absolute; 
-      top: -18px;
+      /* رفع البادج بشكل بسيط جداً */
+      top: -23px; /* تم تغييرها من -20px إلى -23px */
       left: 50%;
       transform: translateX(-50%);
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 9px;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 12px;
       font-weight: bold;
       white-space: nowrap;
-      min-width: 60px;
+      min-width: 70px;
       text-align: center;
       z-index: 10;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -222,27 +224,30 @@
     }
     
     .miga-points {
-      font-size: 12px;
+      font-size: 16px; /* Larger font for mining counter */
       font-weight: bold;
       color: var(--accent);
+      margin: 5px 0;
     }
     
     .days-title {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: bold;
     }
     
-    .ton-amount, .speed-multiplier {
-      font-size: 9px;
+    .ton-amount {
+      font-size: 11px;
       color: #ddd;
+      margin: 3px 0;
     }
     
-    .external-countdown {
-      font-size: 9px; 
+    /* NEW: Countdown inside circle */
+    .countdown-timer {
+      font-size: 11px; 
       font-weight: 600;
       color: var(--accent);
-      margin-top: 3px;
-      height: 12px;
+      margin-top: 5px;
+      height: 15px;
       display: none;
     }
     
@@ -281,8 +286,8 @@
     }
     
     .circle-card.free {
-      width: 140px;
-      height: 45px;
+      width: 160px;
+      height: 50px;
       border-radius: 30px;
       background: rgba(60, 60, 60, 0.6);
       cursor: not-allowed;
@@ -301,16 +306,16 @@
     .stats-bar {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin: 3px 0 12px; /* Reduced from 5px 0 15px */
+      gap: 15px;
+      margin: 10px 0 20px;
       flex-wrap: wrap;
     }
     
     .stat-card {
       background: rgba(0, 40, 80, 0.5);
-      border-radius: 10px;
-      padding: 6px 10px; /* Reduced from 8px 12px */
-      min-width: 90px; /* Reduced from 100px */
+      border-radius: 12px;
+      padding: 10px 15px;
+      min-width: 120px;
       transition: transform 0.3s ease;
     }
     
@@ -320,13 +325,13 @@
     }
     
     .stat-value {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--accent);
     }
     
     .stat-label {
-      font-size: 10px;
+      font-size: 12px;
       color: #aaa;
     }
 
@@ -338,7 +343,7 @@
       background: rgba(10, 30, 50, 0.95);
       display: flex;
       justify-content: space-around;
-      padding: 6px 0; /* Reduced from 8px 0 */
+      padding: 10px 0;
       border-top: 1px solid rgba(0, 51, 102, 0.8);
       z-index: 999;
       backdrop-filter: blur(5px);
@@ -347,20 +352,20 @@
     .nav-item {
       text-align: center;
       color: #aaa;
-      font-size: 10px;
+      font-size: 12px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
-      padding: 3px 10px;
+      gap: 3px;
+      padding: 5px 10px;
       flex: 1;
       max-width: 20%;
       transition: all 0.3s ease;
     }
 
     .nav-item i {
-      font-size: 16px;
+      font-size: 20px;
     }
 
     .nav-item.active {
@@ -389,38 +394,63 @@
     
     /* Responsive Adjustments */
     @media (max-width: 480px) {
+      body {
+        font-size: 15px;
+        padding: 12px 0 75px;
+      }
+      
+      .plan-title {
+        font-size: 18px;
+      }
+      
+      /* Adjusted circle size for mobile */
       .circle-card {
-        width: 80px;
-        height: 80px;
-        font-size: 9px;
+        width: 120px;
+        height: 120px;
+        font-size: 11px;
       }
       
       .badge {
-        font-size: 8px;
-        min-width: 55px;
-        top: -16px;
-      }
-      
-      .plan-row {
-        gap: 5px;
+        font-size: 11px;
+        min-width: 65px;
+        top: -21px; /* تعديل طفيف للموبايل */
       }
       
       .stat-card {
-        min-width: 80px;
-        padding: 5px 7px; /* Reduced from 6px 8px */
+        min-width: 110px;
+        padding: 8px 12px;
+      }
+      
+      .nav-item i {
+        font-size: 18px;
       }
     }
     
     @media (max-width: 360px) {
+      body {
+        font-size: 14px;
+      }
+      
+      /* Further adjusted circle size for small mobile */
       .circle-card {
-        width: 70px;
-        height: 70px;
+        width: 100px;
+        height: 100px;
+        font-size: 10px;
       }
       
       .badge {
-        font-size: 7px;
-        min-width: 50px;
-        top: -14px;
+        font-size: 10px;
+        min-width: 60px;
+        top: -19px; /* تعديل طفيف للموبايل الصغير */
+      }
+      
+      .stat-card {
+        min-width: 100px;
+        padding: 7px 10px;
+      }
+      
+      .nav-item i {
+        font-size: 16px;
       }
     }
   </style>
@@ -434,7 +464,7 @@
     </div>
     <div id="ton-connect"></div>
     
-    <!-- Moved stats bar to the top -->
+    <!-- Stats bar at the top -->
     <div class="stats-bar"> 
       <div class="stat-card"> 
         <div class="stat-label">
@@ -472,40 +502,41 @@
             Bronze
           </div> 
           <div class="circle-card" data-days="7" onclick="handlePlanClick(0.5,7,1,this)"> 
-            <div class="miga-points">
-              0 Mg
-            </div> 
+            <!-- New arrangement inside circle -->
             <div class="days-title">
               7 Days
             </div> 
             <div class="ton-amount">
               0.5 TON
             </div> 
+            <div class="miga-points">
+              0.00 mg
+            </div> 
+            <div class="countdown-timer" id="countdown-7d"></div> 
             <div class="speed-multiplier">
               1× Speed
             </div> 
           </div> 
-          <div class="external-countdown" id="countdown-7d"></div> 
         </div> 
         <div class="circle-container"> 
           <div class="badge silver-badge">
             Silver
           </div> 
           <div class="circle-card" data-days="15" onclick="handlePlanClick(0.75,15,1.5,this)"> 
-            <div class="miga-points">
-              0 Mg
-            </div> 
             <div class="days-title">
               15 Days
             </div> 
             <div class="ton-amount">
               0.75 TON
             </div> 
+            <div class="miga-points">
+              0.00 mg
+            </div> 
+            <div class="countdown-timer" id="countdown-15d"></div> 
             <div class="speed-multiplier">
               1.5× Speed
             </div> 
           </div> 
-          <div class="external-countdown" id="countdown-15d"></div> 
         </div> 
       </div> 
       <div class="centered-row"> 
@@ -514,20 +545,20 @@
             Gold
           </div> 
           <div class="circle-card special" data-days="30" onclick="handlePlanClick(1,30,2,this)"> 
-            <div class="miga-points">
-              0 Mg
-            </div> 
             <div class="days-title">
               30 Days
             </div> 
             <div class="ton-amount">
               1 TON
             </div> 
+            <div class="miga-points">
+              0.00 mg
+            </div> 
+            <div class="countdown-timer" id="countdown-30d"></div> 
             <div class="speed-multiplier">
               2× Speed
             </div> 
           </div> 
-          <div class="external-countdown" id="countdown-30d"></div> 
         </div> 
       </div> 
       <div class="plan-row"> 
@@ -536,46 +567,47 @@
             Platinum
           </div> 
           <div class="circle-card" data-days="60" onclick="handlePlanClick(1.5,60,3,this)"> 
-            <div class="miga-points">
-              0 Mg
-            </div> 
             <div class="days-title">
               60 Days
             </div> 
             <div class="ton-amount">
               1.5 TON
             </div> 
+            <div class="miga-points">
+              0.00 mg
+            </div> 
+            <div class="countdown-timer" id="countdown-60d"></div> 
             <div class="speed-multiplier">
               3× Speed
             </div> 
           </div> 
-          <div class="external-countdown" id="countdown-60d"></div> 
         </div> 
         <div class="circle-container"> 
           <div class="badge diamond-badge">
             Diamond
           </div> 
           <div class="circle-card" data-days="90" onclick="handlePlanClick(2,90,4,this)"> 
-            <div class="miga-points">
-              0 Mg
-            </div> 
             <div class="days-title">
               90 Days
             </div> 
             <div class="ton-amount">
               2 TON
             </div> 
+            <div class="miga-points">
+              0.00 mg
+            </div> 
+            <div class="countdown-timer" id="countdown-90d"></div> 
             <div class="speed-multiplier">
               4× Speed
             </div> 
           </div> 
-          <div class="external-countdown" id="countdown-90d"></div> 
         </div> 
       </div> 
       <div class="centered-row"> 
         <div id="free-claim" class="circle-card free" onclick="collectFreePoints(this)"> 
-          <span class="miga-points">100 Mg</span> 
-          <span class="days-title">Free Bonus</span> 
+          <span class="miga-points">100</span> 
+          <!-- تغيير النص من "Free Bonus" إلى "Free Claim" -->
+          <span class="days-title">Free Claim</span> 
         </div> 
       </div> 
     </div>
@@ -775,9 +807,9 @@
         btn.classList.add("active");
         btn.classList.remove("disabled");
         btn.querySelector(".miga-points")
-           .innerText = `${freeData.remaining} Mg`;
+           .innerText = `${freeData.remaining}`;
         btn.querySelector(".days-title")
-           .innerText = `Daily Bonus`;
+           .innerText = `Free Claim`;
       } else {
         btn.classList.remove("active");
         btn.classList.add("disabled");
@@ -921,7 +953,7 @@
       
       const totalSec = plan.days * 86400;
       let elapsed = Math.floor((Date.now() - plan.startTime)/1000);
-      const cd = document.getElementById(`countdown-${plan.days}d`);
+      const cd = el.querySelector(".countdown-timer");
       const mp = el.querySelector(".miga-points");
             
       if (el._timer) clearInterval(el._timer);
@@ -961,8 +993,8 @@
         cd.innerText = `${d}d ${h}h ${m}m ${s}s`;
         plan.accumulatedPoints += (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
         
-        // Display points without decimals
-        mp.innerText = `${Math.floor(plan.accumulatedPoints)} Mg`;
+        // Display points with 2 decimals and "mg" unit
+        mp.innerText = `${plan.accumulatedPoints.toFixed(2)} mg`;
         savePointsData();
       }, 1000);
     }
