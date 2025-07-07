@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Miga Mining App - Friends</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
@@ -167,7 +167,7 @@
     }
 
     .nav-item i {
-      font-size: 16px;
+      font-size: 停止px;
     }
 
     .nav-item.active {
@@ -312,13 +312,19 @@
               referrals: [],
               username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername",
               balance: 0,
-              referral_points: 0 // <--- أضف الحقل عند التسجيل لأول مرة
+              referral_points: 0
+            }).then(() => {
+              console.log('تم إنشاء المستخدم بنجاح مع balance و referral_points');
             }).catch(err => {
+              console.error('خطأ في إنشاء المستخدم:', err);
               alert('Error saving your data: ' + err.message);
             });
+          } else {
+            console.log('المستخدم موجود بالفعل');
           }
         })
         .catch(err => {
+          console.error('خطأ في جلب بيانات المستخدم:', err);
           alert('Error fetching user data: ' + err.message);
         });
 
@@ -328,32 +334,49 @@
 
         const referralsRef = database.ref('users/' + referralId + '/referrals');
         const balanceRef = database.ref('users/' + referralId + '/balance');
-        const referralPointsRef = database.ref('users/' + referralId + '/referral_points'); // <--- هذا هو الجديد
+        const referralPointsRef = database.ref('users/' + referralId + '/referral_points');
 
         referralsRef.once('value').then(snapshot => {
           let referrals = snapshot.val() || [];
           if (!referrals.includes(newUserId)) {
             referrals.push(newUserId);
             referralsRef.set(referrals).then(() => {
-              // زيادة الرصيد 100 Miga
-              balanceRef.transaction(currentBalance => {
-                return (currentBalance || 0) + 100;
+              console.log('تم إضافة الإحالة بنجاح');
+
+              // تحديث الرصيد
+              balanceRef.once('value').then(balanceSnap => {
+                const currentBalance = balanceSnap.val() || 0;
+                balanceRef.set(currentBalance + 100).then(() => {
+                  console.log('تم تحديث الرصيد بنجاح إلى:', currentBalance + 100);
+                }).catch(err => {
+                  console.error('خطأ في تحديث الرصيد:', err);
+                });
               });
-              // زيادة مجموع النقاط من الإحالات 100 Miga
-              referralPointsRef.transaction(currentTotal => {
-                return (currentTotal || 0) + 100;
+
+              // تحديث referral_points
+              referralPointsRef.once('value').then(pointsSnap => {
+                const currentPoints = pointsSnap.val() || 0;
+                referralPointsRef.set(currentPoints + 100).then(() => {
+                  console.log('تم تحديث referral_points بنجاح إلى:', currentPoints + 100);
+                }).catch(err => {
+                  console.error('خطأ في تحديث referral_points:', err);
+                });
               });
             }).catch(err => {
+              console.error('خطأ في تحديث قائمة الإحالات:', err);
               alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
             });
+          } else {
+            console.log('الإحالة موجودة بالفعل');
           }
         }).catch(err => {
+          console.error('خطأ في جلب الإحالات:', err);
           alert('خطأ في جلب الإحالات: ' + err.message);
         });
       }
 
       // تسجيل المدعو الحالي كصديق (إذا لم يكن هو نفسه)
-      if (currentUserId && referralId) {
+      if (currentUserId && referralId && currentUserId !== referralId) {
         addReferralAndReward(referralId, currentUserId);
       }
 
@@ -415,6 +438,7 @@
                 }
               })
               .catch(err => {
+                console.error('خطأ في جلب بيانات الصديق:', err);
                 const tr = document.createElement('tr');
                 const td = document.createElement('td');
                 td.colSpan = 3;
@@ -429,6 +453,7 @@
         }
       }, err => {
         loadingIndicator.style.display = 'none'; // Hide loading indicator on error
+        console.error('خطأ في جلب قائمة الأصدقاء:', err);
         alert('Error fetching friends list: ' + err.message);
       });
 
