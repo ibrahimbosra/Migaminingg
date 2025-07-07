@@ -117,6 +117,11 @@
       background: rgba(0,51,102,0.7);
       color: #ff9900;
     }
+    .referrals-table tfoot td {
+      background: rgba(0,51,102,0.6);
+      font-weight: bold;
+      color: #ffd700;
+    }
     .referrals-table td {
       background: rgba(0,51,102,0.3);
     }
@@ -198,11 +203,18 @@
             <tr>
               <th>#</th>
               <th>Username</th>
+              <th>Reward</th>
             </tr>
           </thead>
           <tbody id="referralsBody">
             <!-- Data will be populated here -->
           </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="center">Total</td>
+              <td id="referralsTotal" class="center">0 Mg</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
       <!-- End table -->
@@ -349,6 +361,7 @@
       const loadingIndicator = document.getElementById('loadingIndicator');
       const friendsCountElem = document.getElementById('friendsCount');
       const referralsBody = document.getElementById('referralsBody');
+      const referralsTotal = document.getElementById('referralsTotal');
 
       loadingIndicator.style.display = 'block';
 
@@ -363,11 +376,12 @@
         if (referrals.length === 0) {
           const tr = document.createElement('tr');
           const td = document.createElement('td');
-          td.colSpan = 2;
+          td.colSpan = 3;
           td.style.textAlign = 'center';
           td.textContent = "No friends invited yet.";
           tr.appendChild(td);
           referralsBody.appendChild(tr);
+          referralsTotal.textContent = "0 Mg";
         } else {
           referrals.forEach((refId, idx) => {
             database.ref('users/' + refId).once('value')
@@ -384,16 +398,25 @@
                 // Username
                 const tdUser = document.createElement('td');
                 tdUser.textContent = username + ` (ID: ${refId})`;
+                
+                // Reward column (fixed value)
+                const tdReward = document.createElement('td');
+                tdReward.textContent = "0 Mg";
+                tdReward.className = 'center';
 
                 tr.appendChild(tdNum);
                 tr.appendChild(tdUser);
+                tr.appendChild(tdReward);
                 referralsBody.appendChild(tr);
+
+                // Update total to 0
+                referralsTotal.textContent = "0 Mg";
               })
               .catch(err => {
                 console.error('Error fetching friend data:', err);
                 const tr = document.createElement('tr');
                 const td = document.createElement('td');
-                td.colSpan = 2;
+                td.colSpan = 3;
                 td.textContent = `Error fetching friend data (ID: ${refId})`;
                 tr.appendChild(td);
                 referralsBody.appendChild(tr);
