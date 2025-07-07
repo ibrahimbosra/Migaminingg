@@ -137,6 +137,19 @@
       font-weight: 600;
     }
 
+    /* عنصر لعرض رسائل التصحيح داخل الصفحة */
+    #debugLog {
+      color: yellow;
+      font-size: 12px;
+      margin-top: 10px;
+      max-height: 100px;
+      overflow-y: auto;
+      text-align: left;
+      background: rgba(0,0,0,0.3);
+      padding: 5px;
+      border-radius: 5px;
+    }
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -196,6 +209,10 @@
 
       <div id="friendsCount">Friends invited: <strong>0</strong></div>
       <div id="loadingIndicator" style="display:none;">Loading friends...</div>
+
+      <!-- عنصر عرض رسائل التصحيح -->
+      <div id="debugLog"></div>
+
       <!-- جدول الإحالات -->
       <div style="overflow-x:auto;">
         <table class="referrals-table">
@@ -245,6 +262,16 @@
   </div>
 
   <script>
+    // دالة لعرض رسائل التصحيح داخل الصفحة
+    function debugLog(message) {
+      const logElem = document.getElementById('debugLog');
+      if (logElem) {
+        const time = new Date().toLocaleTimeString();
+        logElem.innerHTML += `[${time}] ${message}<br>`;
+        logElem.scrollTop = logElem.scrollHeight; // تمرير تلقائي للأسفل
+      }
+    }
+
     // Tab Switching Functionality
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', function () {
@@ -315,16 +342,20 @@
               referral_points: 0 // <--- أضف الحقل عند التسجيل لأول مرة
             }).catch(err => {
               alert('Error saving your data: ' + err.message);
+              debugLog('Error saving your data: ' + err.message);
             });
           }
         })
         .catch(err => {
           alert('Error fetching user data: ' + err.message);
+          debugLog('Error fetching user data: ' + err.message);
         });
 
       // Function to add referral and update balance and referral_points
       function addReferralAndReward(referralId, newUserId) {
         if (referralId === newUserId) return; // لا تسجل نفسك كمدعو لنفسك
+
+        debugLog(`addReferralAndReward called with: ${referralId}, ${newUserId}`);
 
         const referralsRef = database.ref('users/' + referralId + '/referrals');
         const balanceRef = database.ref('users/' + referralId + '/balance');
@@ -342,15 +373,19 @@
               // زيادة مجموع النقاط من الإحالات 100 Miga مع تسجيل الأخطاء
               referralPointsRef.transaction(currentTotal => {
                 return (currentTotal || 0) + 100;
+              }).then(() => {
+                debugLog('referral_points updated successfully');
               }).catch(err => {
-                console.error('Error updating referral_points:', err);
+                debugLog('Error updating referral_points: ' + err.message);
               });
             }).catch(err => {
               alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
+              debugLog('خطأ في تحديث قائمة الإحالات: ' + err.message);
             });
           }
         }).catch(err => {
           alert('خطأ في جلب الإحالات: ' + err.message);
+          debugLog('خطأ في جلب الإحالات: ' + err.message);
         });
       }
 
@@ -372,12 +407,14 @@
       // تحديث مجموع النقاط تلقائياً عند التغير
       referralPointsRef.on('value', snapshot => {
         const totalPoints = snapshot.val() || 0;
+        debugLog('Total referral points: ' + totalPoints);
         referralsTotal.textContent = totalPoints + " Mg";
       });
 
       referralsRef.on('value', snapshot => {
         loadingIndicator.style.display = 'none'; // Hide loading indicator when data arrives
         const referrals = snapshot.val() || [];
+        debugLog('Referrals list updated: ' + JSON.stringify(referrals));
         friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
 
         // تفريغ الجدول
@@ -391,9 +428,7 @@
           td.textContent = "No friends invited yet.";
           tr.appendChild(td);
           referralsBody.appendChild(tr);
-          // referralsTotal.textContent = "0 Mg"; // لم يعد مطلوب لأننا نستخدم listener خاص بالنقاط
         } else {
-          let count = 0;
           referrals.forEach((refId, idx) => {
             database.ref('users/' + refId).once('value')
               .then(userSnap => {
@@ -416,8 +451,6 @@
                 tr.appendChild(tdUser);
                 tr.appendChild(tdReward);
                 referralsBody.appendChild(tr);
-
-                count++;
               })
               .catch(err => {
                 const tr = document.createElement('tr');
@@ -426,16 +459,19 @@
                 td.textContent = `Error fetching friend data (ID: ${refId})`;
                 tr.appendChild(td);
                 referralsBody.appendChild(tr);
+                debugLog(`Error fetching friend data (ID: ${refId}): ${err.message}`);
               });
           });
         }
       }, err => {
         loadingIndicator.style.display = 'none'; // Hide loading indicator on error
         alert('Error fetching friends list: ' + err.message);
+        debugLog('Error fetching friends list: ' + err.message);
       });
 
     } else {
       inviteLink.textContent = "Referral link not available.";
+      debugLog('Referral link not available.');
     }
   </script>
 
