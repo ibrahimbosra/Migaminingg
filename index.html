@@ -326,6 +326,10 @@
     const referralId = startParam || (window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
     const currentUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
+    // --- رسالة debugLog جديدة لتحديد قيم معرف المستخدم ومعرف الإحالة عند التحميل ---
+    debugLog('Initial Load: referralId=' + referralId + ', currentUserId=' + currentUserId);
+    // --- نهاية الرسالة الجديدة ---
+
     if (referralId) {
       const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
       inviteLink.textContent = referralLink;
@@ -335,64 +339,96 @@
       userRef.once('value')
         .then(snapshot => {
           if (!snapshot.exists()) {
+            debugLog('User ' + referralId + ' does not exist. Creating new user.');
             userRef.set({
               referrals: [],
               username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername",
               balance: 0,
               referral_points: 0 // <--- أضف الحقل عند التسجيل لأول مرة
+            }).then(() => {
+              debugLog('New user ' + referralId + ' created successfully.');
             }).catch(err => {
               alert('Error saving your data: ' + err.message);
-              debugLog('Error saving your data: ' + err.message);
+              debugLog('Error saving your data for new user ' + referralId + ': ' + err.message);
             });
+          } else {
+            debugLog('User ' + referralId + ' already exists.');
           }
         })
         .catch(err => {
           alert('Error fetching user data: ' + err.message);
-          debugLog('Error fetching user data: ' + err.message);
+          debugLog('Error fetching user data for ' + referralId + ': ' + err.message);
         });
 
       // Function to add referral and update balance and referral_points
-      function addReferralAndReward(referralId, newUserId) {
-        if (referralId === newUserId) return; // لا تسجل نفسك كمدعو لنفسك
+      function addReferralAndReward(referrerId, referredUserId) { // تغيير أسماء المتغيرات لتكون أوضح
+        if (referrerId === referredUserId) {
+          debugLog('Attempted to refer self. Skipping referral.');
+          return; // لا تسجل نفسك كمدعو لنفسك
+        }
 
-        debugLog(`addReferralAndReward called with: ${referralId}, ${newUserId}`);
+        debugLog(`addReferralAndReward called: referrerId=${referrerId}, referredUserId=${referredUserId}`);
 
-        const referralsRef = database.ref('users/' + referralId + '/referrals');
-        const balanceRef = database.ref('users/' + referralId + '/balance');
-        const referralPointsRef = database.ref('users/' + referralId + '/referral_points'); // <--- هذا هو الجديد
+        const referralsRef = database.ref('users/' + referrerId + '/referrals');
+        const balanceRef = database.ref('users/' + referrerId + '/balance');
+        const referralPointsRef = database.ref('users/' + referrerId + '/referral_points');
 
         referralsRef.once('value').then(snapshot => {
           let referrals = snapshot.val() || [];
-          if (!referrals.includes(newUserId)) {
-            referrals.push(newUserId);
+          debugLog('Current referrals for ' + referrerId + ': ' + JSON.stringify(referrals));
+          if (!referrals.includes(referredUserId)) {
+            debugLog('New referral found: ' + referredUserId + '. Adding to list.');
+            referrals.push(referredUserId);
             referralsRef.set(referrals).then(() => {
+              debugLog('Referral ' + referredUserId + ' added to ' + referrerId + ' list successfully.');
+              
               // زيادة الرصيد 100 Miga
               balanceRef.transaction(currentBalance => {
+                debugLog(`Updating balance for ${referrerId}: from ${currentBalance} to ${ (currentBalance || 0) + 100}`);
                 return (currentBalance || 0) + 100;
+              }).catch(err => {
+                debugLog('Error updating balance: ' + err.message);
               });
+
               // زيادة مجموع النقاط من الإحالات 100 Miga مع تسجيل الأخطاء
               referralPointsRef.transaction(currentTotal => {
+                debugLog(`Updating referral_points for ${referrerId}: from ${currentTotal} to ${(currentTotal || 0) + 100}`);
                 return (currentTotal || 0) + 100;
               }).then(() => {
-                debugLog('referral_points updated successfully');
+                debugLog('referral_points updated successfully for ' + referrerId);
               }).catch(err => {
                 debugLog('Error updating referral_points: ' + err.message);
               });
             }).catch(err => {
               alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
-              debugLog('خطأ في تحديث قائمة الإحالات: ' + err.message);
+              debugLog('خطأ في تحديث قائمة الإحالات لـ ' + referrerId + ': ' + err.message);
             });
+          } else {
+            debugLog('User ' + referredUserId + ' is already a referral for ' + referrerId + '. Skipping update.');
           }
         }).catch(err => {
           alert('خطأ في جلب الإحالات: ' + err.message);
-          debugLog('خطأ في جلب الإحالات: ' + err.message);
+          debugLog('خطأ في جلب الإحالات لـ ' + referrerId + ': ' + err.message);
         });
       }
 
+      // --- رسالة debugLog جديدة للتحقق من قيم currentUserId و referralId قبل الاستدعاء ---
+      debugLog('Checking conditions for addReferralAndReward: currentUserId=' + currentUserId + ', referralId=' + referralId);
+      // --- نهاية الرسالة الجديدة ---
+
       // تسجيل المدعو الحالي كصديق (إذا لم يكن هو نفسه)
-      if (currentUserId && referralId) {
+      // الشرط: currentUserId يجب أن يكون موجوداً، و referralId يجب أن يكون موجوداً، ويجب أن يختلفا.
+      if (currentUserId && referralId && currentUserId !== referralId) {
+        debugLog('Conditions met. Calling addReferralAndReward.');
         addReferralAndReward(referralId, currentUserId);
+      } else if (!currentUserId) {
+        debugLog('currentUserId is null/undefined. Cannot add referral.');
+      } else if (!referralId) {
+        debugLog('referralId is null/undefined. Cannot add referral.');
+      } else if (currentUserId === referralId) {
+        debugLog('currentUserId is same as referralId. Cannot add self as referral.');
       }
+
 
       // Fetch and display referrals with loading indicator and error handling
       const referralsRef = database.ref('users/' + referralId + '/referrals');
@@ -407,8 +443,10 @@
       // تحديث مجموع النقاط تلقائياً عند التغير
       referralPointsRef.on('value', snapshot => {
         const totalPoints = snapshot.val() || 0;
-        debugLog('Total referral points: ' + totalPoints);
+        debugLog('Displaying Total referral points: ' + totalPoints);
         referralsTotal.textContent = totalPoints + " Mg";
+      }, err => {
+        debugLog('Error listening to referral_points: ' + err.message);
       });
 
       referralsRef.on('value', snapshot => {
@@ -429,38 +467,48 @@
           tr.appendChild(td);
           referralsBody.appendChild(tr);
         } else {
-          referrals.forEach((refId, idx) => {
-            database.ref('users/' + refId).once('value')
+          // جلب بيانات جميع الإحالات قبل عرضها لتجنب المشاكل في الترتيب
+          const promises = referrals.map((refId, idx) => {
+            return database.ref('users/' + refId).once('value')
               .then(userSnap => {
                 const userData = userSnap.val();
-                const username = userData?.username || "Unknown";
-                const tr = document.createElement('tr');
-                // رقم الإحالة
-                const tdNum = document.createElement('td');
-                tdNum.textContent = (idx + 1);
-                tdNum.className = 'center';
-                // اسم المستخدم
-                const tdUser = document.createElement('td');
-                tdUser.textContent = username + ` (ID: ${refId})`;
-                // المكافأة
-                const tdReward = document.createElement('td');
-                tdReward.textContent = "100 Mg";
-                tdReward.className = 'center';
-
-                tr.appendChild(tdNum);
-                tr.appendChild(tdUser);
-                tr.appendChild(tdReward);
-                referralsBody.appendChild(tr);
-              })
-              .catch(err => {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = 3;
-                td.textContent = `Error fetching friend data (ID: ${refId})`;
-                tr.appendChild(td);
-                referralsBody.appendChild(tr);
-                debugLog(`Error fetching friend data (ID: ${refId}): ${err.message}`);
+                return {
+                  id: refId,
+                  username: userData?.username || "Unknown",
+                  index: idx
+                };
               });
+          });
+
+          Promise.all(promises).then(results => {
+            results.sort((a, b) => a.index - b.index); // للتأكد من الترتيب الأصلي
+            results.forEach((refData, idx) => {
+              const tr = document.createElement('tr');
+              // رقم الإحالة
+              const tdNum = document.createElement('td');
+              tdNum.textContent = (idx + 1);
+              tdNum.className = 'center';
+              // اسم المستخدم
+              const tdUser = document.createElement('td');
+              tdUser.textContent = refData.username + ` (ID: ${refData.id})`;
+              // المكافأة
+              const tdReward = document.createElement('td');
+              tdReward.textContent = "100 Mg";
+              tdReward.className = 'center';
+
+              tr.appendChild(tdNum);
+              tr.appendChild(tdUser);
+              tr.appendChild(tdReward);
+              referralsBody.appendChild(tr);
+            });
+          }).catch(err => {
+            debugLog('Error fetching multiple friend data: ' + err.message);
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.textContent = `Error loading some friends: ${err.message}`;
+            tr.appendChild(td);
+            referralsBody.appendChild(tr);
           });
         }
       }, err => {
@@ -470,8 +518,8 @@
       });
 
     } else {
-      inviteLink.textContent = "Referral link not available.";
-      debugLog('Referral link not available.');
+      inviteLink.textContent = "Referral link not available. No start parameter or Telegram user ID.";
+      debugLog('Referral link not available. No start parameter or Telegram user ID.');
     }
   </script>
 
