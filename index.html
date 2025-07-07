@@ -339,9 +339,11 @@
               balanceRef.transaction(currentBalance => {
                 return (currentBalance || 0) + 100;
               });
-              // زيادة مجموع النقاط من الإحالات 100 Miga
+              // زيادة مجموع النقاط من الإحالات 100 Miga مع تسجيل الأخطاء
               referralPointsRef.transaction(currentTotal => {
                 return (currentTotal || 0) + 100;
+              }).catch(err => {
+                console.error('Error updating referral_points:', err);
               });
             }).catch(err => {
               alert('خطأ في تحديث قائمة الإحالات: ' + err.message);
@@ -359,12 +361,19 @@
 
       // Fetch and display referrals with loading indicator and error handling
       const referralsRef = database.ref('users/' + referralId + '/referrals');
+      const referralPointsRef = database.ref('users/' + referralId + '/referral_points'); // لجلب مجموع النقاط
       const loadingIndicator = document.getElementById('loadingIndicator');
       const friendsCountElem = document.getElementById('friendsCount');
       const referralsBody = document.getElementById('referralsBody');
       const referralsTotal = document.getElementById('referralsTotal');
 
       loadingIndicator.style.display = 'block'; // Show loading indicator
+
+      // تحديث مجموع النقاط تلقائياً عند التغير
+      referralPointsRef.on('value', snapshot => {
+        const totalPoints = snapshot.val() || 0;
+        referralsTotal.textContent = totalPoints + " Mg";
+      });
 
       referralsRef.on('value', snapshot => {
         loadingIndicator.style.display = 'none'; // Hide loading indicator when data arrives
@@ -382,7 +391,7 @@
           td.textContent = "No friends invited yet.";
           tr.appendChild(td);
           referralsBody.appendChild(tr);
-          referralsTotal.textContent = "0 Mg";
+          // referralsTotal.textContent = "0 Mg"; // لم يعد مطلوب لأننا نستخدم listener خاص بالنقاط
         } else {
           let count = 0;
           referrals.forEach((refId, idx) => {
@@ -409,10 +418,6 @@
                 referralsBody.appendChild(tr);
 
                 count++;
-                // عند آخر إحالة، ضع المجموع
-                if (count === referrals.length) {
-                  referralsTotal.textContent = (referrals.length * 100) + " Mg";
-                }
               })
               .catch(err => {
                 const tr = document.createElement('tr');
@@ -423,9 +428,6 @@
                 referralsBody.appendChild(tr);
               });
           });
-          if (referrals.length === 0) {
-            referralsTotal.textContent = "0 Mg";
-          }
         }
       }, err => {
         loadingIndicator.style.display = 'none'; // Hide loading indicator on error
