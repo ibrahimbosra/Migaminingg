@@ -540,6 +540,57 @@
       padding: 0 15px;
     }
     
+    /* New Tasks Tab Styles */
+    .task-tabs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      gap: 5px;
+    }
+    
+    .task-tab {
+      flex: 1;
+      background: rgba(0, 40, 80, 0.5);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 5px;
+      color: #aee9f7;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .task-tab i {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    .task-tab:hover {
+      background: rgba(0, 51, 102, 0.7);
+      transform: translateY(-2px);
+    }
+    
+    .task-tab.active {
+      background: var(--accent);
+      color: #001a33;
+      font-weight: bold;
+      box-shadow: 0 0 8px rgba(255, 153, 0, 0.5);
+    }
+    
+    .task-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .task-content.active {
+      display: block;
+    }
+    
     .task-category {
       margin-bottom: 25px;
     }
@@ -550,6 +601,7 @@
       margin-bottom: 12px;
       color: var(--accent);
       padding-left: 5px;
+      text-align: left;
     }
     
     .task-list {
@@ -753,6 +805,11 @@
       .nav-item i {
         font-size: 18px;
       }
+      
+      .task-tab {
+        font-size: 12px;
+        padding: 8px 3px;
+      }
     }
     
     @media (max-width: 360px) {
@@ -779,6 +836,11 @@
       
       .nav-item i {
         font-size: 16px;
+      }
+      
+      .task-tab {
+        font-size: 11px;
+        padding: 6px 2px;
       }
     }
   </style>
@@ -1019,110 +1081,193 @@
   <!-- Tasks Tab Content -->
   <div id="tasks-tab" class="tab-content">
     <div class="tasks-container">
+      <!-- Task Tabs -->
+      <div class="task-tabs">
+        <button class="task-tab active" data-tab="daily-tasks">
+          <i class="fas fa-calendar-day"></i>
+          Daily
+        </button>
+        <button class="task-tab" data-tab="weekly-tasks">
+          <i class="fas fa-calendar-week"></i>
+          Weekly
+        </button>
+        <button class="task-tab" data-tab="referral-tasks">
+          <i class="fas fa-user-friends"></i>
+          Referral
+        </button>
+        <button class="task-tab" data-tab="special-tasks">
+          <i class="fas fa-star"></i>
+          Special
+        </button>
+      </div>
       
-      <!-- Daily Tasks -->
-      <div class="task-category">
-        <div class="category-title">Daily Tasks</div>
-        <div class="task-list">
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">Daily Login</div>
-              <div class="task-description">Sign in daily to claim reward</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 100%"></div>
+      <!-- Daily Tasks Content -->
+      <div id="daily-tasks" class="task-content active">
+        <div class="task-category">
+          <div class="category-title">Daily Tasks</div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Daily Login</div>
+                <div class="task-description">Sign in daily to claim reward</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+50 Miga</div>
+                <button class="task-button">Claim</button>
               </div>
             </div>
-            <div>
-              <div class="task-reward">+50 Miga</div>
-              <button class="task-button">Claim</button>
-            </div>
-          </div>
-          
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">Watch Video</div>
-              <div class="task-description">Watch a short video</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Watch Video</div>
+                <div class="task-description">Watch a short video</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
               </div>
-            </div>
-            <div>
-              <div class="task-reward">+25 Miga</div>
-              <button class="task-button">Start</button>
+              <div>
+                <div class="task-reward">+25 Miga</div>
+                <button class="task-button">Start</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Weekly Tasks -->
-      <div class="task-category">
-        <div class="category-title">Weekly Challenges</div>
-        <div class="task-list">
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">Active Miner</div>
-              <div class="task-description">Login 5 days this week</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 60%"></div>
+      <!-- Weekly Tasks Content -->
+      <div id="weekly-tasks" class="task-content">
+        <div class="task-category">
+          <div class="category-title">Weekly Challenges</div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Active Miner</div>
+                <div class="task-description">Login 5 days this week</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+200 Miga</div>
+                <button class="task-button" disabled>3/5</button>
               </div>
             </div>
-            <div>
-              <div class="task-reward">+200 Miga</div>
-              <button class="task-button" disabled>3/5</button>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Complete All Daily Tasks</div>
+                <div class="task-description">Complete all daily tasks 5 times this week</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 40%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+300 Miga</div>
+                <button class="task-button" disabled>2/5</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Referral Tasks -->
-      <div class="task-category">
-        <div class="category-title">Invite Friends</div>
-        <div class="task-list">
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">First Referral</div>
-              <div class="task-description">Invite your first friend</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 100%"></div>
+      <!-- Referral Tasks Content -->
+      <div id="referral-tasks" class="task-content">
+        <div class="task-category">
+          <div class="category-title">Invite Friends</div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">First Referral</div>
+                <div class="task-description">Invite your first friend</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+100 Miga</div>
+                <button class="task-button">Claim</button>
               </div>
             </div>
-            <div>
-              <div class="task-reward">+100 Miga</div>
-              <button class="task-button">Claim</button>
-            </div>
-          </div>
-          
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">Referral Master</div>
-              <div class="task-description">Invite 5 friends</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 60%"></div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Referral Master</div>
+                <div class="task-description">Invite 5 friends</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+1000 Miga</div>
+                <button class="task-button" disabled>3/5</button>
               </div>
             </div>
-            <div>
-              <div class="task-reward">+1000 Miga</div>
-              <button class="task-button" disabled>3/5</button>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Referral Champion</div>
+                <div class="task-description">Invite 10 friends</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+2500 Miga</div>
+                <button class="task-button" disabled>2/10</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Special Tasks -->
-      <div class="task-category">
-        <div class="category-title">Special Missions</div>
-        <div class="task-list">
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">Join Telegram</div>
-              <div class="task-description">Join our official channel</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
+      <!-- Special Tasks Content -->
+      <div id="special-tasks" class="task-content">
+        <div class="task-category">
+          <div class="category-title">Special Missions</div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Join Telegram</div>
+                <div class="task-description">Join our official channel</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+500 Miga</div>
+                <button class="task-button">Join</button>
               </div>
             </div>
-            <div>
-              <div class="task-reward">+500 Miga</div>
-              <button class="task-button">Join</button>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Follow on Twitter</div>
+                <div class="task-description">Follow our official Twitter account</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+300 Miga</div>
+                <button class="task-button">Follow</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Share Post</div>
+                <div class="task-description">Share our post on social media</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+200 Miga</div>
+                <button class="task-button">Share</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1211,6 +1356,28 @@
         if(tabId === 'home-tab') initHomePage();
         else if(tabId === 'friends-tab') initFriendsPage();
         else if(tabId === 'leaders-tab') initLeadersPage();
+      });
+    });
+
+    // Task Tab Navigation
+    document.querySelectorAll('.task-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all task tabs
+        document.querySelectorAll('.task-tab').forEach(t => {
+          t.classList.remove('active');
+        });
+        
+        // Add active class to clicked task tab
+        this.classList.add('active');
+        
+        // Hide all task contents
+        document.querySelectorAll('.task-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Show the selected task content
+        const contentId = this.getAttribute('data-tab');
+        document.getElementById(contentId).classList.add('active');
       });
     });
 
