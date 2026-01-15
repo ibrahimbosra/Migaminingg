@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miga Mining App - Real Data</title>
+  <title>Miga Mining App</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -67,41 +68,15 @@
       max-width: 480px;
       margin: 0 auto;
     }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin: 20px auto;
-      max-width: 450px;
-      padding: 0 10px;
-    }
-
-    .stat-card-large {
-      background: rgba(0, 40, 80, 0.5);
+    
+    img.crypto-image {
+      width: 95%;
+      max-width: 400px;
+      margin: 15px auto 10px;
+      display: block;
       border-radius: 12px;
-      padding: 20px 15px;
-      text-align: center;
-      transition: transform 0.3s ease;
-      border: 1px solid rgba(0, 102, 204, 0.2);
-    }
-
-    .stat-card-large:hover {
-      transform: translateY(-5px);
-      background: rgba(0, 51, 102, 0.7);
-    }
-
-    .stat-value-large {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent);
-      margin: 10px 0;
-    }
-
-    .stat-label-large {
-      font-size: 14px;
-      color: #aee9f7;
-      font-weight: 500;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border: 2px solid rgba(182, 79, 200, 0.3);
     }
 
     .chart-section {
@@ -800,52 +775,11 @@
       color: #fff;
     }
     
-    /* User Profile */
-    .profile-header {
-      background: rgba(0, 40, 80, 0.5);
-      border-radius: 15px;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 450px;
-      text-align: center;
-    }
-    
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin: 0 auto 15px;
-      background: linear-gradient(135deg, #0066cc, #b64fc8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      color: white;
-    }
-    
-    .profile-name {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: var(--accent);
-    }
-    
-    .profile-username {
-      font-size: 14px;
-      color: #aee9f7;
-      margin-bottom: 15px;
-    }
-    
     /* Responsive Adjustments */
     @media (max-width: 480px) {
       body {
         font-size: 15px;
         padding: 12px 0 75px;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
       }
       
       .plan-title {
@@ -916,52 +850,24 @@
   <!-- Home Tab Content -->
   <div id="home-tab" class="tab-content">
     <div class="home-container">
-      <!-- User Profile -->
-      <div class="profile-header">
-        <div class="profile-avatar">
-          <i class="fas fa-user"></i>
-        </div>
-        <div class="profile-name" id="userName">Loading...</div>
-        <div class="profile-username" id="userUsername">@username</div>
-        <div class="points-display">
-          Total Miga: <span id="userTotalMiga">0</span> Mg
-        </div>
-      </div>
-
-      <!-- Global Stats -->
-      <div class="stats-grid">
-        <div class="stat-card-large">
-          <div class="stat-label-large">Total Users</div>
-          <div class="stat-value-large" id="totalUsers">0</div>
-        </div>
-        <div class="stat-card-large">
-          <div class="stat-label-large">Total Miga Mined</div>
-          <div class="stat-value-large" id="totalMigaMined">0</div>
-        </div>
-        <div class="stat-card-large">
-          <div class="stat-label-large">Active Miners</div>
-          <div class="stat-value-large" id="activeMiners">0</div>
-        </div>
-        <div class="stat-card-large">
-          <div class="stat-label-large">Your Rank</div>
-          <div class="stat-value-large" id="userRank">#0</div>
-        </div>
-      </div>
-
       <div class="chart-section">
-        <div class="chart-note">Global Mining Progress (Last 7 Days)</div>
-        <canvas id="miningChart" width="400" height="160"></canvas>
+        <div class="chart-note">Real-time Miga mining progress</div>
+        <div class="current-price" id="currentMining">Mined: ...</div>
+        <canvas id="fakeChart" width="400" height="160"></canvas>
       </div>
 
       <div class="info-box">
-        <strong>Real Mining Statistics</strong><br>
-        All data shown is real and fetched from the blockchain database.<br><br>
-        <strong>How Mining Works:</strong><br>
-        1. Choose a mining plan based on duration and investment<br>
-        2. Your mining speed depends on the plan multiplier<br>
-        3. Earn Miga tokens continuously while your plan is active<br>
-        4. Complete tasks and invite friends to earn bonus Miga<br><br>
-        <strong>Total Supply:</strong> 25 Billion Miga Tokens
+        <strong>What is Miga?</strong><br>
+        Miga is a token mined by users. Total supply is capped at 25 Billion.<br><br>
+        <strong>How to get it?</strong><br>
+        Ready to earn? Choose your plan and start mining Miga now!<br><br>
+        <strong>Key Features:</strong>
+        <ul>
+          <li>Multiple mining plans with different durations</li>
+          <li>Referral program to earn extra Miga</li>
+          <li>Daily tasks and challenges</li>
+          <li>Leaderboard to track top miners</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -981,12 +887,8 @@
         </div>
         <div id="copyMsg" class="copy-message">Link copied!</div>
 
-        <div id="friendsCount" class="friends-count">
-          Friends invited: <strong>0</strong> | Earned: <strong id="referralEarnings">0</strong> Mg
-        </div>
-        <div id="loadingIndicator" class="loading-indicator" style="display:none;">
-          <i class="fas fa-spinner fa-spin"></i> Loading friends data...
-        </div>
+        <div id="friendsCount" class="friends-count">Friends invited: <strong>0</strong></div>
+        <div id="loadingIndicator" class="loading-indicator" style="display:none;">Loading friends...</div>
         
         <!-- Referrals table -->
         <div style="overflow-x:auto;">
@@ -995,17 +897,15 @@
               <tr>
                 <th>#</th>
                 <th>Username</th>
-                <th>Join Date</th>
-                <th>Status</th>
                 <th>Reward</th>
               </tr>
             </thead>
             <tbody id="referralsBody">
-              <tr><td colspan="5" style="text-align:center;">Loading referrals...</td></tr>
+              <!-- Data will be populated here -->
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" class="center">Total Earnings</td>
+                <td colspan="2" class="center">Total</td>
                 <td id="referralsTotal" class="center">0 Mg</td>
               </tr>
             </tfoot>
@@ -1019,106 +919,156 @@
   <div id="mining-tab" class="tab-content active">
     <div class="mining-container">
       <div class="plan-title">
-        <i class="fas fa-cube"></i> Miga Mining Plans
+        <i class="fas fa-cube"></i> Miga Mining
       </div>
-      
-      <!-- Wallet Connection -->
       <div id="ton-connect"></div>
       
-      <!-- User Mining Stats -->
+      <!-- Mining stats -->
       <div class="stats-bar"> 
         <div class="stat-card"> 
-          <div class="stat-label">Your Total Miga</div> 
-          <div class="stat-value"><span id="userMigaTotal">0</span> Mg</div> 
+          <div class="stat-label">
+            Total Mg
+          </div> 
+          <div class="stat-value">
+            <span id="points-total">0</span> Mg
+          </div> 
         </div> 
         <div class="stat-card"> 
-          <div class="stat-label">Daily Mining</div> 
-          <div class="stat-value"><span id="dailyMiningRate">0</span> Mg/day</div> 
+          <div class="stat-label">
+            Mining Speed
+          </div> 
+          <div class="stat-value">
+            <span id="points-rate">0</span> Mg/s
+          </div> 
         </div> 
         <div class="stat-card"> 
-          <div class="stat-label">Active Plans</div> 
-          <div class="stat-value"><span id="userActivePlans">0</span></div> 
+          <div class="stat-label">
+            Active Plans
+          </div> 
+          <div class="stat-value">
+            <span id="active-plans">0</span>
+          </div> 
         </div> 
       </div>
       
-      <!-- Active Plans Status -->
-      <div id="activePlansContainer" style="display:none;">
-        <div class="plan-title" style="margin-top:20px;">
-          <i class="fas fa-play-circle"></i> Active Mining Plans
-        </div>
-        <div id="activePlansList" class="info-box" style="text-align:left;">
-          <!-- Active plans will be displayed here -->
-        </div>
-      </div>
-
       <div class="plan-title">
         Choose Your Mining Plan
       </div>
-      
-      <!-- Mining Plans -->
       <div class="circle-wrapper"> 
         <div class="plan-row"> 
           <div class="circle-container"> 
-            <div class="badge bronze-badge">Bronze</div> 
-            <div class="circle-card" data-plan="bronze" data-days="7" data-ton="0.5" data-multiplier="1">
-              <div class="days-title">7 Days</div> 
-              <div class="ton-amount">0.5 TON</div> 
-              <div class="miga-points">500 Mg/day</div> 
-              <div class="speed-multiplier">1× Speed</div> 
+            <div class="badge bronze-badge">
+              Bronze
+            </div> 
+            <div class="circle-card" data-days="7" onclick="handlePlanClick(0.5,7,1,this)"> 
+              <div class="days-title">
+                7 Days
+              </div> 
+              <div class="ton-amount">
+                0.5 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-7d"></div> 
+              <div class="speed-multiplier">
+                1× Speed
+              </div> 
             </div> 
           </div> 
           <div class="circle-container"> 
-            <div class="badge silver-badge">Silver</div> 
-            <div class="circle-card" data-plan="silver" data-days="15" data-ton="0.75" data-multiplier="1.5">
-              <div class="days-title">15 Days</div> 
-              <div class="ton-amount">0.75 TON</div> 
-              <div class="miga-points">750 Mg/day</div> 
-              <div class="speed-multiplier">1.5× Speed</div> 
+            <div class="badge silver-badge">
+              Silver
+            </div> 
+            <div class="circle-card" data-days="15" onclick="handlePlanClick(0.75,15,1.5,this)"> 
+              <div class="days-title">
+                15 Days
+              </div> 
+              <div class="ton-amount">
+                0.75 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-15d"></div> 
+              <div class="speed-multiplier">
+                1.5× Speed
+              </div> 
             </div> 
           </div> 
         </div> 
         <div class="centered-row"> 
           <div class="circle-container"> 
-            <div class="badge gold-badge">Gold</div> 
-            <div class="circle-card special" data-plan="gold" data-days="30" data-ton="1" data-multiplier="2">
-              <div class="days-title">30 Days</div> 
-              <div class="ton-amount">1 TON</div> 
-              <div class="miga-points">1,000 Mg/day</div> 
-              <div class="speed-multiplier">2× Speed</div> 
+            <div class="badge gold-badge">
+              Gold
+            </div> 
+            <div class="circle-card special" data-days="30" onclick="handlePlanClick(1,30,2,this)"> 
+              <div class="days-title">
+                30 Days
+              </div> 
+              <div class="ton-amount">
+                1 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-30d"></div> 
+              <div class="speed-multiplier">
+                2× Speed
+              </div> 
             </div> 
           </div> 
         </div> 
         <div class="plan-row"> 
           <div class="circle-container"> 
-            <div class="badge platinum-badge">Platinum</div> 
-            <div class="circle-card" data-plan="platinum" data-days="60" data-ton="1.5" data-multiplier="3">
-              <div class="days-title">60 Days</div> 
-              <div class="ton-amount">1.5 TON</div> 
-              <div class="miga-points">1,500 Mg/day</div> 
-              <div class="speed-multiplier">3× Speed</div> 
+            <div class="badge platinum-badge">
+              Platinum
+            </div> 
+            <div class="circle-card" data-days="60" onclick="handlePlanClick(1.5,60,3,this)"> 
+              <div class="days-title">
+                60 Days
+              </div> 
+              <div class="ton-amount">
+                1.5 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-60d"></div> 
+              <div class="speed-multiplier">
+                3× Speed
+              </div> 
             </div> 
           </div> 
           <div class="circle-container"> 
-            <div class="badge diamond-badge">Diamond</div> 
-            <div class="circle-card" data-plan="diamond" data-days="90" data-ton="2" data-multiplier="4">
-              <div class="days-title">90 Days</div> 
-              <div class="ton-amount">2 TON</div> 
-              <div class="miga-points">2,000 Mg/day</div> 
-              <div class="speed-multiplier">4× Speed</div> 
+            <div class="badge diamond-badge">
+              Diamond
+            </div> 
+            <div class="circle-card" data-days="90" onclick="handlePlanClick(2,90,4,this)"> 
+              <div class="days-title">
+                90 Days
+              </div> 
+              <div class="ton-amount">
+                2 TON
+              </div> 
+              <div class="miga-points">
+                0.00 mg
+              </div> 
+              <div class="countdown-timer" id="countdown-90d"></div> 
+              <div class="speed-multiplier">
+                4× Speed
+              </div> 
             </div> 
           </div> 
         </div> 
-        
-        <!-- Daily Bonus -->
         <div class="centered-row"> 
-          <div id="daily-bonus" class="circle-card free" onclick="claimDailyBonus()"> 
-            <span class="miga-points" id="dailyBonusAmount">100</span> 
-            <span class="days-title" id="dailyBonusText">Daily Bonus</span> 
+          <div id="free-claim" class="circle-card free" onclick="collectFreePoints(this)"> 
+            <span class="miga-points">100</span> 
+            <span class="days-title">Free Claim</span> 
           </div> 
         </div> 
       </div>
       
-      <!-- Messages -->
       <div id="wallet-message" class="wallet-message">
         <i class="fas fa-wallet"></i> Please connect your wallet first
       </div>
@@ -1132,57 +1082,194 @@
   <!-- Tasks Tab Content -->
   <div id="tasks-tab" class="tab-content">
     <div class="tasks-container">
+      <!-- Task Tabs -->
       <div class="task-tabs">
         <button class="task-tab active" data-tab="daily-tasks">
-          <i class="fas fa-calendar-day"></i> Daily
+          <i class="fas fa-calendar-day"></i>
+          Daily
         </button>
         <button class="task-tab" data-tab="weekly-tasks">
-          <i class="fas fa-calendar-week"></i> Weekly
+          <i class="fas fa-calendar-week"></i>
+          Weekly
         </button>
         <button class="task-tab" data-tab="referral-tasks">
-          <i class="fas fa-user-friends"></i> Referral
+          <i class="fas fa-user-friends"></i>
+          Referral
         </button>
         <button class="task-tab" data-tab="special-tasks">
-          <i class="fas fa-star"></i> Special
+          <i class="fas fa-star"></i>
+          Special
         </button>
       </div>
       
-      <!-- Daily Tasks -->
+      <!-- Daily Tasks Content -->
       <div id="daily-tasks" class="task-content active">
         <div class="task-category">
           <div class="category-title">Daily Tasks</div>
-          <div class="task-list" id="dailyTasksList">
-            Loading tasks...
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Daily Login</div>
+                <div class="task-description">Sign in daily to claim reward</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+50 Miga</div>
+                <button class="task-button">Claim</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Watch Video</div>
+                <div class="task-description">Watch a short video</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+25 Miga</div>
+                <button class="task-button">Start</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Weekly Tasks -->
+      <!-- Weekly Tasks Content -->
       <div id="weekly-tasks" class="task-content">
         <div class="task-category">
           <div class="category-title">Weekly Challenges</div>
-          <div class="task-list" id="weeklyTasksList">
-            Loading tasks...
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Active Miner</div>
+                <div class="task-description">Login 5 days this week</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+200 Miga</div>
+                <button class="task-button" disabled>3/5</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Complete All Daily Tasks</div>
+                <div class="task-description">Complete all daily tasks 5 times this week</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 40%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+300 Miga</div>
+                <button class="task-button" disabled>2/5</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Referral Tasks -->
+      <!-- Referral Tasks Content -->
       <div id="referral-tasks" class="task-content">
         <div class="task-category">
-          <div class="category-title">Referral Missions</div>
-          <div class="task-list" id="referralTasksList">
-            Loading tasks...
+          <div class="category-title">Invite Friends</div>
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">First Referral</div>
+                <div class="task-description">Invite your first friend</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+100 Miga</div>
+                <button class="task-button">Claim</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Referral Master</div>
+                <div class="task-description">Invite 5 friends</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+1000 Miga</div>
+                <button class="task-button" disabled>3/5</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Referral Champion</div>
+                <div class="task-description">Invite 10 friends</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+2500 Miga</div>
+                <button class="task-button" disabled>2/10</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Special Tasks -->
+      <!-- Special Tasks Content -->
       <div id="special-tasks" class="task-content">
         <div class="task-category">
           <div class="category-title">Special Missions</div>
-          <div class="task-list" id="specialTasksList">
-            Loading tasks...
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Join Telegram</div>
+                <div class="task-description">Join our official channel</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+500 Miga</div>
+                <button class="task-button">Join</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Follow on Twitter</div>
+                <div class="task-description">Follow our official Twitter account</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+300 Miga</div>
+                <button class="task-button">Follow</button>
+              </div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-info">
+                <div class="task-name">Share Post</div>
+                <div class="task-description">Share our post on social media</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="task-reward">+200 Miga</div>
+                <button class="task-button">Share</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1193,10 +1280,8 @@
   <div id="leaders-tab" class="tab-content">
     <div class="leaders-container">
       <div class="leaderboard">
-        <h2><i class="fas fa-trophy"></i> Top Miners Leaderboard</h2>
-        <div id="leadersList" class="loading-indicator">
-          <i class="fas fa-spinner fa-spin"></i> Loading leaderboard...
-        </div>
+        <h2>Top Miners</h2>
+        <div id="leadersList"></div>
       </div>
     </div>
   </div>
@@ -1242,13 +1327,6 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Global Variables
-    let currentUser = null;
-    let currentUserId = null;
-    let walletConnected = false;
-    let userData = null;
-    let miningChart = null;
-
     // Get URL parameter
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1279,7 +1357,6 @@
         if(tabId === 'home-tab') initHomePage();
         else if(tabId === 'friends-tab') initFriendsPage();
         else if(tabId === 'leaders-tab') initLeadersPage();
-        else if(tabId === 'tasks-tab') initTasksPage();
       });
     });
 
@@ -1305,886 +1382,612 @@
       });
     });
 
-    // Initialize App
-    async function initApp() {
-      try {
-        // Get Telegram user data
-        const tg = window.Telegram?.WebApp;
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          currentUser = tg.initDataUnsafe.user;
-          currentUserId = currentUser.id.toString();
-          
-          // Initialize user in database
-          await initUserInDatabase();
-          
-          // Load user data
-          await loadUserData();
-          
-          // Initialize pages
-          initHomePage();
-          initFriendsPage();
-          initMiningPage();
-          initTasksPage();
-          
-          // Start real-time updates
-          startRealtimeUpdates();
-        } else {
-          // Fallback for non-Telegram users
-          currentUserId = "guest_" + Date.now();
-          currentUser = {
-            first_name: "Guest",
-            username: "guest"
-          };
-          
-          alert("Please open this app through Telegram for full functionality.");
-        }
-      } catch (error) {
-        console.error("Error initializing app:", error);
-      }
-    }
-
-    // Initialize user in database
-    async function initUserInDatabase() {
-      const userRef = database.ref('users/' + currentUserId);
-      const snapshot = await userRef.once('value');
-      
-      if (!snapshot.exists()) {
-        // Check for referral
-        const referrerId = getQueryParam('start');
-        
-        // Create new user
-        const userData = {
-          telegram_id: currentUserId,
-          username: currentUser.username || "no_username",
-          first_name: currentUser.first_name || "User",
-          last_name: currentUser.last_name || "",
-          join_date: new Date().toISOString(),
-          referrer: referrerId || null,
-          referrals: [],
-          total_miga: 0,
-          daily_miga: 0,
-          weekly_miga: 0,
-          monthly_miga: 0,
-          active_plans: [],
-          completed_tasks: {},
-          daily_bonus_claimed: false,
-          last_bonus_claim: null,
-          total_referral_earnings: 0,
-          mining_speed: 0,
-          rank: 0
-        };
-        
-        await userRef.set(userData);
-        
-        // Add to referrals if referrer exists
-        if (referrerId && referrerId !== currentUserId) {
-          await addReferral(referrerId, currentUserId);
-        }
-      }
-    }
-
-    // Load user data
-    async function loadUserData() {
-      const userRef = database.ref('users/' + currentUserId);
-      userRef.on('value', (snapshot) => {
-        userData = snapshot.val();
-        if (userData) {
-          updateUIWithUserData();
-        }
-      });
-    }
-
-    // Update UI with user data
-    function updateUIWithUserData() {
-      if (!userData) return;
-      
-      // Home page
-      document.getElementById('userName').textContent = userData.first_name;
-      document.getElementById('userUsername').textContent = "@" + userData.username;
-      document.getElementById('userTotalMiga').textContent = userData.total_miga.toLocaleString();
-      
-      // Mining page
-      document.getElementById('userMigaTotal').textContent = userData.total_miga.toLocaleString();
-      document.getElementById('dailyMiningRate').textContent = userData.mining_speed.toFixed(2);
-      document.getElementById('userActivePlans').textContent = userData.active_plans ? userData.active_plans.length : 0;
-      
-      // Update active plans display
-      updateActivePlansDisplay();
-      
-      // Update daily bonus button
-      updateDailyBonusButton();
-    }
-
-    // Update active plans display
-    function updateActivePlansDisplay() {
-      const container = document.getElementById('activePlansContainer');
-      const list = document.getElementById('activePlansList');
-      
-      if (!userData.active_plans || userData.active_plans.length === 0) {
-        container.style.display = 'none';
-        return;
-      }
-      
-      container.style.display = 'block';
-      let html = '';
-      
-      userData.active_plans.forEach((plan, index) => {
-        const startTime = new Date(plan.start_time);
-        const endTime = new Date(plan.end_time);
-        const now = new Date();
-        const totalHours = Math.floor((endTime - startTime) / (1000 * 60 * 60));
-        const elapsedHours = Math.floor((now - startTime) / (1000 * 60 * 60));
-        const remainingHours = Math.max(0, totalHours - elapsedHours);
-        const progress = Math.min(100, (elapsedHours / totalHours) * 100);
-        
-        const days = Math.floor(remainingHours / 24);
-        const hours = remainingHours % 24;
-        
-        html += `
-          <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-              <strong style="color: var(--accent);">${plan.plan_name} Plan</strong>
-              <span>${plan.daily_miga} Mg/day</span>
-            </div>
-            <div style="font-size: 12px; color: #aee9f7; margin-bottom: 8px;">
-              Started: ${startTime.toLocaleDateString()} | Ends: ${endTime.toLocaleDateString()}
-            </div>
-            <div style="margin-bottom: 5px;">
-              <div style="display: flex; justify-content: space-between; font-size: 12px;">
-                <span>Progress</span>
-                <span>${progress.toFixed(1)}%</span>
-              </div>
-              <div style="height: 6px; background: rgba(0,51,102,0.8); border-radius: 3px; overflow: hidden;">
-                <div style="height: 100%; width: ${progress}%; background: var(--accent);"></div>
-              </div>
-            </div>
-            <div style="font-size: 12px; color: var(--accent);">
-              Time remaining: ${days}d ${hours}h
-            </div>
-          </div>
-        `;
-      });
-      
-      list.innerHTML = html || '<div style="text-align:center;">No active plans</div>';
-    }
-
-    // Update daily bonus button
-    function updateDailyBonusButton() {
-      const bonusBtn = document.getElementById('daily-bonus');
-      const bonusAmount = document.getElementById('dailyBonusAmount');
-      const bonusText = document.getElementById('dailyBonusText');
-      
-      if (!userData.daily_bonus_claimed) {
-        bonusBtn.classList.add('active');
-        bonusBtn.style.cursor = 'pointer';
-        bonusAmount.textContent = '100';
-        bonusText.textContent = 'Daily Bonus';
-      } else {
-        bonusBtn.classList.remove('active');
-        bonusBtn.style.cursor = 'not-allowed';
-        
-        const lastClaim = new Date(userData.last_bonus_claim);
-        const now = new Date();
-        const nextClaim = new Date(lastClaim);
-        nextClaim.setDate(nextClaim.getDate() + 1);
-        
-        if (now < nextClaim) {
-          const hoursLeft = Math.floor((nextClaim - now) / (1000 * 60 * 60));
-          const minutesLeft = Math.floor(((nextClaim - now) % (1000 * 60 * 60)) / (1000 * 60));
-          bonusAmount.textContent = `${hoursLeft}h ${minutesLeft}m`;
-          bonusText.textContent = 'Next Bonus';
-        } else {
-          // Reset bonus if 24 hours passed
-          database.ref('users/' + currentUserId).update({
-            daily_bonus_claimed: false
-          });
-        }
-      }
-    }
-
-    // Claim daily bonus
-    async function claimDailyBonus() {
-      if (!userData || userData.daily_bonus_claimed) return;
-      
-      const bonusAmount = 100;
-      
-      // Update user data
-      await database.ref('users/' + currentUserId).update({
-        daily_bonus_claimed: true,
-        last_bonus_claim: new Date().toISOString(),
-        total_miga: (userData.total_miga || 0) + bonusAmount,
-        daily_miga: (userData.daily_miga || 0) + bonusAmount,
-        weekly_miga: (userData.weekly_miga || 0) + bonusAmount,
-        monthly_miga: (userData.monthly_miga || 0) + bonusAmount
-      });
-      
-      // Show success message
-      showAlert('Daily bonus claimed! +100 Mg', 'success');
-      
-      // Update button
-      updateDailyBonusButton();
-    }
-
-    // Add referral
-    async function addReferral(referrerId, newUserId) {
-      try {
-        const referrerRef = database.ref('users/' + referrerId);
-        const snapshot = await referrerRef.once('value');
-        
-        if (snapshot.exists()) {
-          const referrerData = snapshot.val();
-          const referrals = referrerData.referrals || [];
-          
-          if (!referrals.includes(newUserId)) {
-            referrals.push(newUserId);
-            
-            // Update referrer data
-            await referrerRef.update({
-              referrals: referrals,
-              total_referral_earnings: (referrerData.total_referral_earnings || 0) + 100,
-              total_miga: (referrerData.total_miga || 0) + 100,
-              daily_miga: (referrerData.daily_miga || 0) + 100,
-              weekly_miga: (referrerData.weekly_miga || 0) + 100,
-              monthly_miga: (referrerData.monthly_miga || 0) + 100
-            });
-            
-            // Update global referral count
-            const globalRef = database.ref('global/stats');
-            const globalSnapshot = await globalRef.once('value');
-            const globalData = globalSnapshot.val() || { total_referrals: 0 };
-            
-            await globalRef.update({
-              total_referrals: (globalData.total_referrals || 0) + 1
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error adding referral:", error);
-      }
-    }
-
     // Home Page
     function initHomePage() {
-      updateGlobalStats();
-      initMiningChart();
-    }
-
-    // Update global stats
-    async function updateGlobalStats() {
-      try {
-        const statsRef = database.ref('global/stats');
-        statsRef.on('value', (snapshot) => {
-          const stats = snapshot.val() || {};
-          
-          document.getElementById('totalUsers').textContent = stats.total_users || '0';
-          document.getElementById('totalMigaMined').textContent = 
-            stats.total_miga_mined ? Math.floor(stats.total_miga_mined).toLocaleString() : '0';
-          document.getElementById('activeMiners').textContent = stats.active_miners || '0';
-          
-          // Calculate user rank
-          if (userData && userData.total_miga) {
-            database.ref('users').once('value').then((usersSnapshot) => {
-              const users = [];
-              usersSnapshot.forEach((childSnapshot) => {
-                const user = childSnapshot.val();
-                if (user.total_miga) {
-                  users.push({
-                    id: childSnapshot.key,
-                    total_miga: user.total_miga
-                  });
-                }
-              });
-              
-              users.sort((a, b) => b.total_miga - a.total_miga);
-              const rank = users.findIndex(u => u.id === currentUserId) + 1;
-              document.getElementById('userRank').textContent = rank > 0 ? '#' + rank : 'Unranked';
-              
-              // Update rank in database
-              database.ref('users/' + currentUserId).update({
-                rank: rank
-              });
-            });
-          }
-        });
-      } catch (error) {
-        console.error("Error updating global stats:", error);
+      const totalSupply = 25000000000;
+      const miningStartDate = new Date('2025-05-05T00:00:00Z');
+      const secondsInSixMonths = 6 * 30 * 24 * 60 * 60;
+      const miningSpeedPerSecond = totalSupply / secondsInSixMonths;
+    
+      async function fetchServerTime() {
+        try {
+          return new Date();
+        } catch {
+          return new Date();
+        }
       }
-    }
-
-    // Initialize mining chart
-    function initMiningChart() {
-      const ctx = document.getElementById('miningChart').getContext('2d');
-      
-      // Fetch mining history
-      database.ref('global/mining_history').limitToLast(7).once('value')
-        .then((snapshot) => {
-          const history = snapshot.val() || {};
-          const labels = [];
-          const data = [];
-          
-          Object.keys(history).forEach(date => {
-            labels.push(date);
-            data.push(history[date]);
-          });
-          
-          if (miningChart) {
-            miningChart.destroy();
-          }
-          
-          miningChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Daily Miga Mined',
-                data: data,
-                borderColor: '#b64fc8',
-                backgroundColor: 'rgba(182, 79, 200, 0.1)',
-                tension: 0.4,
-                fill: true,
-                pointRadius: 3,
-                pointBackgroundColor: '#b64fc8',
-                borderWidth: 2,
-              }]
+    
+      async function calculateCurrentMining() {
+        const now = await fetchServerTime();
+        let diffSeconds = Math.floor((now - miningStartDate) / 1000);
+        if (diffSeconds < 0) diffSeconds = 0;
+    
+        let mined = miningSpeedPerSecond * diffSeconds;
+        return mined > totalSupply ? totalSupply : mined;
+      }
+    
+      const currentMiningElem = document.getElementById('currentMining');
+    
+      async function updateMining() {
+        const mined = await calculateCurrentMining();
+        currentMiningElem.textContent = 'Mined: ' + mined.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' / 25,000,000,000';
+        return mined;
+      }
+    
+      updateMining();
+      setInterval(updateMining, 10000);
+    
+      const ctx = document.getElementById('fakeChart').getContext('2d');
+      const initialData = [10000, 30000, 80000, 150000, 400000, 1000000, 3000000, 10000000];
+    
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array(initialData.length).fill(''),
+          datasets: [{
+            label: '',
+            data: initialData,
+            borderColor: '#b64fc8',
+            backgroundColor: 'rgba(182, 79, 200, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 0,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { display: false },
+              grid: { color: 'rgba(0, 51, 102, 0.2)' }
             },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: {
-                  grid: { color: 'rgba(0, 51, 102, 0.2)' },
-                  ticks: { color: '#aee9f7' }
-                },
-                y: {
-                  grid: { color: 'rgba(0, 51, 102, 0.2)' },
-                  ticks: { color: '#aee9f7' }
-                }
-              },
-              plugins: {
-                legend: { 
-                  display: true,
-                  labels: { color: '#aee9f7' }
-                }
-              }
+            y: {
+              display: false,
+              grid: { color: 'rgba(0, 51, 102, 0.2)' }
             }
-          });
-        })
-        .catch(error => {
-          console.error("Error loading mining chart:", error);
-        });
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
     }
-
+    
     // Friends Page
     function initFriendsPage() {
-      updateReferralData();
+      const startParam = getQueryParam('start');
+      const referralId = startParam || (window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
+      const currentUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      if (referralId) {
+        const referralLink = `https://t.me/Migamining_bot?start=${referralId}`;
+        document.getElementById('inviteLink').textContent = referralLink;
+
+        // Register user if not exists
+        const userRef = database.ref('users/' + referralId);
+        userRef.once('value')
+          .then(snapshot => {
+            if (!snapshot.exists()) {
+              userRef.set({
+                referrals: [],
+                username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "NoUsername"
+              });
+            }
+          });
+
+        // Add referral
+        function addReferral(referralId, newUserId) {
+          if (referralId === newUserId) return;
+
+          const referralsRef = database.ref('users/' + referralId + '/referrals');
+
+          referralsRef.once('value').then(snapshot => {
+            let referrals = snapshot.val() || [];
+            if (!referrals.includes(newUserId)) {
+              referrals.push(newUserId);
+              referralsRef.set(referrals);
+            }
+          });
+        }
+
+        // Register current user as friend
+        if (currentUserId && referralId && currentUserId !== referralId) {
+          addReferral(referralId, currentUserId);
+        }
+
+        // Fetch and display referrals
+        const referralsRef = database.ref('users/' + referralId + '/referrals');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const friendsCountElem = document.getElementById('friendsCount');
+        const referralsBody = document.getElementById('referralsBody');
+        const referralsTotal = document.getElementById('referralsTotal');
+
+        loadingIndicator.style.display = 'block';
+
+        referralsRef.on('value', snapshot => {
+          loadingIndicator.style.display = 'none';
+          const referrals = snapshot.val() || [];
+          friendsCountElem.innerHTML = `Friends invited: <strong>${referrals.length}</strong>`;
+
+          referralsBody.innerHTML = '';
+
+          if (referrals.length === 0) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.style.textAlign = 'center';
+            td.textContent = "No friends invited yet.";
+            tr.appendChild(td);
+            referralsBody.appendChild(tr);
+            referralsTotal.textContent = "0 Mg";
+          } else {
+            referrals.forEach((refId, idx) => {
+              database.ref('users/' + refId).once('value')
+                .then(userSnap => {
+                  const userData = userSnap.val();
+                  const username = userData?.username || "Unknown";
+                  const tr = document.createElement('tr');
+                  
+                  const tdNum = document.createElement('td');
+                  tdNum.textContent = (idx + 1);
+                  tdNum.className = 'center';
+                  
+                  const tdUser = document.createElement('td');
+                  tdUser.textContent = username + ` (ID: ${refId})`;
+                  
+                  const tdReward = document.createElement('td');
+                  tdReward.textContent = "100 Mg";
+                  tdReward.className = 'center';
+
+                  tr.appendChild(tdNum);
+                  tr.appendChild(tdUser);
+                  tr.appendChild(tdReward);
+                  referralsBody.appendChild(tr);
+
+                  referralsTotal.textContent = (referrals.length * 100) + " Mg";
+                })
+                .catch(err => {
+                  console.error('Error fetching friend data:', err);
+                  const tr = document.createElement('tr');
+                  const td = document.createElement('td');
+                  td.colSpan = 3;
+                  td.textContent = `Error fetching friend data (ID: ${refId})`;
+                  tr.appendChild(td);
+                  referralsBody.appendChild(tr);
+                });
+            });
+          }
+        }, err => {
+          loadingIndicator.style.display = 'none';
+          console.error('Error fetching friends list:', err);
+          alert('Error fetching friends list: ' + err.message);
+        });
+
+      } else {
+        document.getElementById('inviteLink').textContent = "Referral link not available.";
+      }
       
       // Copy to clipboard
       const inviteLink = document.getElementById('inviteLink');
       const copyMsg = document.getElementById('copyMsg');
-      
+    
+      function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          copyMsg.classList.add('visible');
+          setTimeout(() => {
+            copyMsg.classList.remove('visible');
+          }, 2000);
+        }).catch(err => {
+          alert('Copy failed: ' + err);
+        });
+      }
+    
       inviteLink.addEventListener('click', () => {
-        const link = inviteLink.textContent.trim();
-        if (link && link !== "Loading invite link...") {
-          navigator.clipboard.writeText(link).then(() => {
-            copyMsg.classList.add('visible');
-            setTimeout(() => {
-              copyMsg.classList.remove('visible');
-            }, 2000);
-          }).catch(err => {
-            console.error('Copy failed:', err);
-          });
-        }
+        copyText(inviteLink.textContent.trim());
       });
     }
-
-    // Update referral data
-    async function updateReferralData() {
-      if (!currentUserId) return;
-      
-      const userRef = database.ref('users/' + currentUserId);
-      userRef.on('value', (snapshot) => {
-        const user = snapshot.val();
-        if (!user) return;
-        
-        // Update invite link
-        const inviteLink = `https://t.me/Migamining_bot?start=${currentUserId}`;
-        document.getElementById('inviteLink').textContent = inviteLink;
-        
-        // Update friends count and earnings
-        const referrals = user.referrals || [];
-        const earnings = user.total_referral_earnings || 0;
-        
-        document.getElementById('friendsCount').innerHTML = 
-          `Friends invited: <strong>${referrals.length}</strong> | Earned: <strong>${earnings}</strong> Mg`;
-        
-        // Update referrals table
-        const referralsBody = document.getElementById('referralsBody');
-        const referralsTotal = document.getElementById('referralsTotal');
-        
-        if (referrals.length === 0) {
-          referralsBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No friends invited yet.</td></tr>';
-          referralsTotal.textContent = "0 Mg";
-          return;
-        }
-        
-        referralsBody.innerHTML = '';
-        let totalEarnings = 0;
-        
-        referrals.forEach(async (refId, index) => {
-          try {
-            const refSnapshot = await database.ref('users/' + refId).once('value');
-            const refData = refSnapshot.val();
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td class="center">${index + 1}</td>
-              <td>${refData?.username || 'Unknown'} (ID: ${refId.slice(0, 6)}...)</td>
-              <td class="center">${refData?.join_date ? new Date(refData.join_date).toLocaleDateString() : 'Unknown'}</td>
-              <td class="center">${refData?.active_plans?.length > 0 ? 'Active' : 'Inactive'}</td>
-              <td class="center">100 Mg</td>
-            `;
-            referralsBody.appendChild(tr);
-            
-            totalEarnings += 100;
-            referralsTotal.textContent = totalEarnings + " Mg";
-          } catch (error) {
-            console.error("Error loading referral data:", error);
-          }
-        });
-      });
-    }
-
+    
     // Mining Page
-    function initMiningPage() {
-      // Initialize TON Connect
-      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: "https://ibrahimbosra.github.io/Pay/tonconnect-manifest.json",
-        buttonRootId: "ton-connect",
-        language: "en"
-      });
+    const FREE_DAILY_LIMIT = 100;
+    const FREE_PERIOD_MS   = 24*3600*1000;  // 24 hours
+    const DAILY_POINTS_PER_PLAN = 500; // points per plan per day
+    
+    // Free bonus data
+    let freeData = JSON.parse(localStorage.getItem("freeData")) || {
+      lastReset: 0,
+      remaining: FREE_DAILY_LIMIT
+    };
+    
+    // Points and plans data
+    let pointsData = JSON.parse(localStorage.getItem("pointsData")) || {
+      totalPoints: 0,
+      activePlans: [],
+      hasEverActivatedPlan: false,
+      dailyPoints: 0,
+      weeklyPoints: 0,
+      monthlyPoints: 0,
+      allTimePoints: 0
+    };
+    
+    let globalRate = 0;
+    let walletConnected = false;
+    
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: "https://ibrahimbosra.github.io/Pay/tonconnect-manifest.json",
+      buttonRootId: "ton-connect",
+      language: "en"
+    });
+    
+    // Update wallet status
+    tonConnectUI.onStatusChange(info => {
+      walletConnected = !!(info && info.account);
+      if (!walletConnected) {
+        document.getElementById("wallet-message").style.display = "block";
+      }
+    });
+    
+    function initPoints() {
+      recalcGlobalRate();
+      updatePointsDisplay();
+      resetFreeIfNeeded();
+      toggleFreeClaim();
+      updateStats();
       
-      tonConnectUI.onStatusChange(info => {
-        walletConnected = !!(info && info.account);
-        if (walletConnected) {
-          document.getElementById("wallet-message").style.display = "none";
-        }
-      });
-      
-      // Add click handlers to mining plans
-      document.querySelectorAll('.circle-card[data-plan]').forEach(card => {
-        card.addEventListener('click', () => {
-          handlePlanPurchase(card);
-        });
+      // Start timers for active plans
+      pointsData.activePlans.forEach(plan => {
+        const el = document.querySelector(`.circle-card[data-days="${plan.days}"]`);
+        if (el) startMining(plan, el);
       });
     }
-
-    // Handle plan purchase
-    async function handlePlanPurchase(card) {
+    
+    // Recalculate global rate
+    function recalcGlobalRate() {
+      globalRate = pointsData.activePlans.reduce((sum, plan) => {
+        return sum + (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
+      }, 0);
+    }
+    
+    // Update points
+    function updatePoints() {
+      pointsData.totalPoints += globalRate;
+      pointsData.allTimePoints += globalRate;
+      
+      // Update time-based stats
+      const now = new Date();
+      if (isSameDay(new Date(pointsData.lastUpdate), now)) {
+        pointsData.dailyPoints += globalRate;
+      } else {
+        pointsData.dailyPoints = globalRate;
+      }
+      
+      if (isSameWeek(new Date(pointsData.lastUpdate), now)) {
+        pointsData.weeklyPoints += globalRate;
+      } else {
+        pointsData.weeklyPoints = globalRate;
+      }
+      
+      if (isSameMonth(new Date(pointsData.lastUpdate), now)) {
+        pointsData.monthlyPoints += globalRate;
+      } else {
+        pointsData.monthlyPoints = globalRate;
+      }
+      
+      pointsData.lastUpdate = Date.now();
+      savePointsData();
+      updatePointsDisplay();
+    }
+    
+    // Helper functions for date comparisons
+    function isSameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
+    
+    function isSameWeek(d1, d2) {
+      const oneDay = 24*60*60*1000;
+      const diffDays = Math.round(Math.abs((d1 - d2) / oneDay));
+      return diffDays < 7 && d1.getDay() <= d2.getDay();
+    }
+    
+    function isSameMonth(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth();
+    }
+    
+    // Update points display
+    function updatePointsDisplay() {
+      document.getElementById("points-total").textContent = pointsData.totalPoints.toFixed(4);
+      document.getElementById("points-rate").textContent = globalRate.toFixed(4);
+    }
+    
+    // Update stats
+    function updateStats() {
+      document.getElementById("active-plans").textContent = pointsData.activePlans.length;
+    }
+    
+    // Save points data
+    function savePointsData() {
+      localStorage.setItem("pointsData", JSON.stringify(pointsData));
+    }
+    
+    // Reset daily bonus if needed
+    function resetFreeIfNeeded() {
+      const now = Date.now();
+      if (now - freeData.lastReset >= FREE_PERIOD_MS) {
+        freeData.lastReset = now;
+        freeData.remaining = FREE_DAILY_LIMIT;
+        localStorage.setItem("freeData", JSON.stringify(freeData));
+      }
+    }
+    
+    // Update free claim button state
+    function toggleFreeClaim() {
+      resetFreeIfNeeded();
+      const btn = document.getElementById("free-claim");
+      const now = Date.now();
+      const timeLeft = (freeData.lastReset + FREE_PERIOD_MS) - now;
+      
+      if (pointsData.activePlans.length > 0 && freeData.remaining > 0) {
+        btn.classList.add("active");
+        btn.classList.remove("disabled");
+        btn.querySelector(".miga-points")
+           .innerText = `${freeData.remaining}`;
+        btn.querySelector(".days-title")
+           .innerText = `Free Claim`;
+      } else {
+        btn.classList.remove("active");
+        btn.classList.add("disabled");
+        if (freeData.remaining <= 0) {
+          const h = Math.floor(timeLeft/3600000);
+          const m = Math.floor((timeLeft%3600000)/60000);
+          const s = Math.floor((timeLeft%60000)/1000);
+          btn.querySelector(".miga-points")
+             .innerText = `Wait ${h}h ${m}m ${s}s`;
+          btn.querySelector(".days-title")
+             .innerText = ``;
+        } else {
+          btn.querySelector(".miga-points").innerText = `Bonus`;
+          btn.querySelector(".days-title")
+             .innerText = `Available`;
+        }
+      }
+    }
+    
+    // Claim free points
+    function collectFreePoints(el) {
+      if (collectFreePoints.locked) return;
+      collectFreePoints.locked = true;
+      setTimeout(() => { collectFreePoints.locked = false; }, 1000);
+      
+      if (!pointsData.hasEverActivatedPlan) {
+        document.getElementById('alert-message').innerHTML = '<i class="fas fa-exclamation-triangle"></i> You need to activate at least one plan first';
+        document.getElementById('alert-message').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('alert-message').style.display = 'none';
+        }, 5000);
+        return;
+      }
+      
+      if (!el.classList.contains("active")) {
+        toggleFreeClaim();
+        return;
+      }
+      
+      const bonus = 1;
+      freeData.remaining = Math.max(0, freeData.remaining - bonus);
+      freeData.lastReset = freeData.lastReset;
+      localStorage.setItem("freeData", JSON.stringify(freeData));
+      
+      pointsData.totalPoints += bonus;
+      pointsData.allTimePoints += bonus;
+      pointsData.dailyPoints += bonus;
+      savePointsData();
+      updatePointsDisplay();
+      
+      const coin = document.createElement("div");
+      coin.innerHTML = '<i class="fas fa-coins" style="color: gold; font-size: 20px;"></i>';
+      coin.style.position = "absolute";
+      coin.style.left = `${el.getBoundingClientRect().left + el.offsetWidth/2}px`;
+      coin.style.top = `${el.getBoundingClientRect().top}px`;
+      coin.style.zIndex = "1000";
+      coin.style.opacity = "1";
+      coin.style.transition = "all 1s ease";
+      document.body.appendChild(coin);
+      
+      setTimeout(() => {
+        const pointsDisplay = document.getElementById("points-total");
+        const pointsRect = pointsDisplay.getBoundingClientRect();
+        coin.style.left = `${pointsRect.left}px`;
+        coin.style.top = `${pointsRect.top}px`;
+        coin.style.opacity = "0";
+        coin.style.transform = "scale(0.5)";
+      }, 100);
+      
+      setTimeout(() => {
+        coin.remove();
+      }, 1100);
+      
+      el.classList.add("collected");
+      setTimeout(() => el.classList.remove("collected"), 800);
+      
+      toggleFreeClaim();
+    }
+    
+    function showPlanMessage() {
+      document.getElementById("plan-message").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("plan-message").style.display = "none";
+      }, 3000);
+    }
+    
+    function handlePlanClick(priceTon, days, multiplier, el) {
       if (!walletConnected) {
+        tonConnectUI.openModal();
         document.getElementById("wallet-message").style.display = "block";
         setTimeout(() => {
           document.getElementById("wallet-message").style.display = "none";
-        }, 3000);
+        }, 5000);
         return;
       }
       
-      const planName = card.getAttribute('data-plan');
-      const days = parseInt(card.getAttribute('data-days'));
-      const tonAmount = parseFloat(card.getAttribute('data-ton'));
-      const multiplier = parseFloat(card.getAttribute('data-multiplier'));
-      
-      // Check if user already has this plan active
-      if (userData.active_plans) {
-        const existingPlan = userData.active_plans.find(p => p.plan_name === planName && 
-          new Date(p.end_time) > new Date());
-        
-        if (existingPlan) {
-          document.getElementById('plan-message').innerHTML = 
-            `<i class="fas fa-info-circle"></i> You already have an active ${planName} plan`;
-          document.getElementById("plan-message").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("plan-message").style.display = "none";
-          }, 3000);
-          return;
-        }
+      if (pointsData.activePlans.find(p => p.days === days)) {
+        document.getElementById("plan-message").innerHTML = 
+          `<i class="fas fa-info-circle"></i> This plan is already active!`;
+        showPlanMessage();
+        return;
       }
       
-      // Calculate mining details
-      const dailyMiga = 500 * multiplier;
-      const totalMiga = dailyMiga * days;
-      const startTime = new Date();
-      const endTime = new Date(startTime.getTime() + (days * 24 * 60 * 60 * 1000));
-      
-      // Create plan object
-      const newPlan = {
-        plan_name: planName,
-        days: days,
-        ton_amount: tonAmount,
-        multiplier: multiplier,
-        daily_miga: dailyMiga,
-        total_miga: totalMiga,
-        start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
-        status: 'active'
+      const plan = {
+        days, multiplier,
+        startTime: Date.now(),
+        accumulatedPoints: 0
       };
       
-      // Update user data in database
-      const activePlans = userData.active_plans || [];
-      activePlans.push(newPlan);
+      pointsData.activePlans.push(plan);
+      pointsData.hasEverActivatedPlan = true; 
+      savePointsData();
+      recalcGlobalRate();
+      updatePointsDisplay();
+      updateStats();
+      startMining(plan, el);
+      toggleFreeClaim();
       
-      // Calculate new mining speed
-      const newMiningSpeed = activePlans.reduce((total, plan) => {
-        return total + plan.daily_miga;
-      }, 0) / 24; // Convert to per hour
-      
-      await database.ref('users/' + currentUserId).update({
-        active_plans: activePlans,
-        mining_speed: newMiningSpeed
-      });
-      
-      // Update global stats
-      const globalRef = database.ref('global/stats');
-      const globalSnapshot = await globalRef.once('value');
-      const globalData = globalSnapshot.val() || {};
-      
-      await globalRef.update({
-        total_plans_purchased: (globalData.total_plans_purchased || 0) + 1,
-        active_miners: (globalData.active_miners || 0) + 1
-      });
-      
-      // Show success message
-      showAlert(`${planName} plan activated! Mining ${dailyMiga} Mg/day`, 'success');
-      
-      // Redirect to TON payment
-      window.location.href = `ton://transfer/UQADR_wO9cnAQYUGErMlhP57EFWK78aubu20uxUw-n63Tuo4?amount=${
-        Math.floor(tonAmount * 1e9)
-      }&text=Miga%20${planName}%20Plan`;
+      window.location.href =
+        `ton://transfer/UQADR_wO9cnAQYUGErMlhP57EFWK78aubu20uxUw-n63Tuo4?amount=${
+          Math.floor(priceTon*1e9)
+        }&text=Miga%20Mining`;
     }
-
+    
+    function startMining(plan, el) {
+      el.classList.add("active-pulse");
+      const badge = el.parentElement.querySelector('.badge');
+      if (badge) badge.classList.add("badge-pulse");
+      
+      const totalSec = plan.days * 86400;
+      let elapsed = Math.floor((Date.now() - plan.startTime)/1000);
+      const cd = el.querySelector(".countdown-timer");
+      const mp = el.querySelector(".miga-points");
+            
+      if (el._timer) clearInterval(el._timer);
+      
+      cd.style.display = "block";
+      
+      el._timer = setInterval(() => {
+        elapsed++;
+        const rem = totalSec - elapsed;
+        
+        if (rem < 0) {
+          clearInterval(el._timer);
+          el.classList.remove("active-pulse");
+          if (badge) badge.classList.remove("badge-pulse");
+          cd.innerText = "Completed";
+          pointsData.activePlans =
+            pointsData.activePlans.filter(p => p.days !== plan.days);
+          savePointsData();
+          recalcGlobalRate();
+          updatePointsDisplay();
+          updateStats();
+          toggleFreeClaim();
+          
+          setTimeout(() => {
+            cd.style.display = "none";
+          }, 5000);
+          return;
+        }
+        
+        const d = Math.floor(rem/86400),
+              h = Math.floor((rem%86400)/3600),
+              m = Math.floor((rem%3600)/60),
+              s = rem%60;
+              
+        cd.innerText = `${d}d ${h}h ${m}m ${s}s`;
+        plan.accumulatedPoints += (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
+        
+        mp.innerText = `${plan.accumulatedPoints.toFixed(2)} mg`;
+        savePointsData();
+      }, 1000);
+    }
+    
     // Tasks Page
-    function initTasksPage() {
-      loadTasks();
-    }
-
-    // Load tasks from database
-    async function loadTasks() {
-      try {
-        const tasksRef = database.ref('tasks');
-        const snapshot = await tasksRef.once('value');
-        const tasks = snapshot.val();
-        
-        if (!tasks) return;
-        
-        // Filter tasks by category
-        const dailyTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'daily');
-        const weeklyTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'weekly');
-        const referralTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'referral');
-        const specialTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'special');
-        
-        // Render tasks
-        renderTaskList('dailyTasksList', dailyTasks);
-        renderTaskList('weeklyTasksList', weeklyTasks);
-        renderTaskList('referralTasksList', referralTasks);
-        renderTaskList('specialTasksList', specialTasks);
-        
-      } catch (error) {
-        console.error("Error loading tasks:", error);
-      }
-    }
-
-    // Render task list
-    function renderTaskList(elementId, tasks) {
-      const element = document.getElementById(elementId);
-      if (!element) return;
-      
-      if (tasks.length === 0) {
-        element.innerHTML = '<div style="text-align:center; padding:20px; color:#aee9f7;">No tasks available</div>';
-        return;
-      }
-      
-      let html = '';
-      tasks.forEach(([taskId, task]) => {
-        const isCompleted = userData?.completed_tasks?.[taskId] || false;
-        const progress = task.progress || 0;
-        const maxProgress = task.max_progress || 1;
-        const progressPercent = (progress / maxProgress) * 100;
-        
-        html += `
-          <div class="task-item">
-            <div class="task-info">
-              <div class="task-name">${task.name}</div>
-              <div class="task-description">${task.description}</div>
-              ${task.max_progress > 1 ? `
-                <div class="progress-bar">
-                  <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                </div>
-                <div style="font-size:11px; color:#aee9f7; margin-top:2px;">
-                  ${progress}/${maxProgress}
-                </div>
-              ` : ''}
-            </div>
-            <div>
-              <div class="task-reward">+${task.reward} Miga</div>
-              <button class="task-button" 
-                ${isCompleted ? 'disabled' : ''}
-                onclick="claimTaskReward('${taskId}', ${task.reward})">
-                ${isCompleted ? 'Claimed' : 'Claim'}
-              </button>
-            </div>
-          </div>
-        `;
+    document.querySelectorAll('.task-button').forEach(button => {
+      button.addEventListener('click', function() {
+        if(!this.disabled) {
+          const originalText = this.textContent;
+          this.textContent = "Claimed!";
+          this.disabled = true;
+          
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 2000);
+        }
       });
-      
-      element.innerHTML = html;
-    }
-
-    // Claim task reward
-    async function claimTaskReward(taskId, reward) {
-      try {
-        // Update user data
-        const completedTasks = userData.completed_tasks || {};
-        completedTasks[taskId] = true;
-        
-        await database.ref('users/' + currentUserId).update({
-          completed_tasks: completedTasks,
-          total_miga: (userData.total_miga || 0) + reward,
-          daily_miga: (userData.daily_miga || 0) + reward,
-          weekly_miga: (userData.weekly_miga || 0) + reward,
-          monthly_miga: (userData.monthly_miga || 0) + reward
-        });
-        
-        // Update global stats
-        const globalRef = database.ref('global/stats');
-        const globalSnapshot = await globalRef.once('value');
-        const globalData = globalSnapshot.val() || {};
-        
-        await globalRef.update({
-          total_miga_mined: (globalData.total_miga_mined || 0) + reward,
-          tasks_completed: (globalData.tasks_completed || 0) + 1
-        });
-        
-        // Show success message
-        showAlert(`Task completed! +${reward} Mg earned`, 'success');
-        
-        // Reload tasks
-        initTasksPage();
-        
-      } catch (error) {
-        console.error("Error claiming task reward:", error);
-        showAlert("Error claiming reward. Please try again.", "error");
-      }
-    }
-
+    });
+    
     // Leaders Page
     function initLeadersPage() {
-      loadLeaderboard();
-    }
-
-    // Load leaderboard from database
-    async function loadLeaderboard() {
-      try {
-        const usersRef = database.ref('users');
-        const snapshot = await usersRef.once('value');
-        const users = [];
-        
-        snapshot.forEach((childSnapshot) => {
-          const user = childSnapshot.val();
-          if (user.total_miga > 0) {
-            users.push({
-              id: childSnapshot.key,
-              name: user.first_name || 'User',
-              username: user.username,
-              total_miga: user.total_miga || 0,
-              rank: user.rank || 0
-            });
-          }
-        });
-        
-        // Sort by total Miga
-        users.sort((a, b) => b.total_miga - a.total_miga);
-        
-        // Update ranks
-        users.forEach((user, index) => {
-          user.rank = index + 1;
-        });
-        
-        // Display leaderboard
-        const leadersList = document.getElementById('leadersList');
-        leadersList.innerHTML = '';
-        
-        users.slice(0, 20).forEach((user, index) => {
-          const isCurrentUser = user.id === currentUserId;
-          
-          const div = document.createElement('div');
-          div.className = 'leader';
-          if (isCurrentUser) {
-            div.style.background = 'rgba(182, 79, 200, 0.3)';
-            div.style.border = '1px solid rgba(182, 79, 200, 0.5)';
-          }
-          
-          div.innerHTML = `
-            <div class="rank">#${user.rank}</div>
-            <div class="name">
-              ${user.name} 
-              ${isCurrentUser ? '<span style="color:var(--accent);">(You)</span>' : ''}
-              <br>
-              <small style="color:#aee9f7; font-size:11px;">@${user.username}</small>
-            </div>
-            <div class="amount">${Math.floor(user.total_miga).toLocaleString()} Mg</div>
-          `;
-          
-          leadersList.appendChild(div);
-        });
-        
-        if (users.length === 0) {
-          leadersList.innerHTML = '<div style="text-align:center; padding:20px; color:#aee9f7;">No miners yet</div>';
-        }
-        
-      } catch (error) {
-        console.error("Error loading leaderboard:", error);
-        document.getElementById('leadersList').innerHTML = 
-          '<div style="text-align:center; padding:20px; color:var(--danger);">Error loading leaderboard</div>';
-      }
-    }
-
-    // Start real-time updates
-    function startRealtimeUpdates() {
-      // Update mining every minute
-      setInterval(updateMining, 60000);
-      
-      // Update global stats every 5 minutes
-      setInterval(updateGlobalStatsFromUsers, 300000);
-    }
-
-    // Update mining for all active plans
-    async function updateMining() {
-      if (!currentUserId || !userData?.active_plans) return;
-      
-      let totalMined = 0;
-      const now = new Date();
-      const updatedPlans = [];
-      
-      // Calculate mining for each active plan
-      userData.active_plans.forEach(plan => {
-        const endTime = new Date(plan.end_time);
-        
-        if (now < endTime && plan.status === 'active') {
-          // Calculate hours since last update
-          const lastUpdate = plan.last_update ? new Date(plan.last_update) : new Date(plan.start_time);
-          const hoursPassed = (now - lastUpdate) / (1000 * 60 * 60);
-          
-          if (hoursPassed > 0) {
-            const minedThisUpdate = (plan.daily_miga / 24) * hoursPassed;
-            totalMined += minedThisUpdate;
-            
-            // Update plan
-            plan.mined_so_far = (plan.mined_so_far || 0) + minedThisUpdate;
-            plan.last_update = now.toISOString();
-          }
-        } else if (now >= endTime) {
-          plan.status = 'completed';
-        }
-        
-        updatedPlans.push(plan);
+      const startDate = new Date('2025-05-05T00:00:00Z');
+      const today = new Date();
+      const elapsedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    
+      const leaders = [
+        { name: 'Evelyn', base: 22773973 },
+        { name: 'crypto_boy88', base: 17974026 },
+        { name: 'Юлия', base: 14865206 },
+        { name: 'Andrew', base: 13964927 },
+        { name: 'رنا', base: 11865962 },
+        { name: 'राज', base: 8484001 },
+        { name: '李伟', base: 7778291 },
+        { name: 'Olivia', base: 7007971 },
+        { name: 'ghost2025', base: 6800549 },
+        { name: 'سعيد', base: 6485428 },
+        { name: 'अर्जुन', base: 6085391 },
+        { name: 'Elena', base: 5563901 },
+        { name: 'user_01', base: 5284061 },
+        { name: 'दीपा', base: 4953091 },
+        { name: 'राकेश', base: 4769164 },
+        { name: 'Isabella', base: 4384091 },
+        { name: 'Mohammed', base: 3272901 },
+        { name: '徐磊', base: 1996380 },
+        { name: 'Mia', base: 1585395 },
+        { name: 'bitBoss', base: 1256842 }
+      ];
+    
+      leaders.forEach(leader => {
+        leader.rate = 5000 + Math.floor(Math.random() * 5001);
       });
+    
+      leaders.forEach(leader => {
+        leader.total = leader.base + (leader.rate * elapsedDays);
+      });
+    
+      leaders.sort((a, b) => b.total - a.total);
+    
+      const leadersList = document.getElementById('leadersList');
+      leadersList.innerHTML = '';
       
-      if (totalMined > 0) {
-        // Update user data
-        await database.ref('users/' + currentUserId).update({
-          active_plans: updatedPlans,
-          total_miga: (userData.total_miga || 0) + totalMined,
-          daily_miga: (userData.daily_miga || 0) + totalMined,
-          weekly_miga: (userData.weekly_miga || 0) + totalMined,
-          monthly_miga: (userData.monthly_miga || 0) + totalMined
-        });
-        
-        // Update global mining stats
-        const today = now.toISOString().split('T')[0];
-        const globalRef = database.ref('global');
-        
-        // Update daily mining
-        const dailySnapshot = await database.ref('global/mining_history/' + today).once('value');
-        const dailyMined = dailySnapshot.val() || 0;
-        
-        await database.ref('global/mining_history/' + today).set(dailyMined + totalMined);
-        
-        // Update total mined
-        const statsSnapshot = await database.ref('global/stats').once('value');
-        const stats = statsSnapshot.val() || {};
-        
-        await database.ref('global/stats').update({
-          total_miga_mined: (stats.total_miga_mined || 0) + totalMined
-        });
-      }
+      leaders.forEach((leader, i) => {
+        const div = document.createElement('div');
+        div.className = 'leader';
+        div.innerHTML = `
+          <div class="rank">#${i + 1}</div>
+          <div class="name">${leader.name}</div>
+          <div class="amount">${leader.total.toLocaleString()}</div>
+        `;
+        leadersList.appendChild(div);
+      });
     }
-
-    // Update global stats from all users
-    async function updateGlobalStatsFromUsers() {
-      try {
-        const usersRef = database.ref('users');
-        const snapshot = await usersRef.once('value');
-        
-        let totalUsers = 0;
-        let totalMiga = 0;
-        let activeMiners = 0;
-        
-        snapshot.forEach((childSnapshot) => {
-          const user = childSnapshot.val();
-          totalUsers++;
-          totalMiga += user.total_miga || 0;
-          
-          if (user.active_plans && user.active_plans.length > 0) {
-            const hasActivePlan = user.active_plans.some(plan => 
-              new Date(plan.end_time) > new Date() && plan.status === 'active'
-            );
-            if (hasActivePlan) activeMiners++;
-          }
-        });
-        
-        await database.ref('global/stats').update({
-          total_users: totalUsers,
-          total_miga_mined: totalMiga,
-          active_miners: activeMiners
-        });
-        
-      } catch (error) {
-        console.error("Error updating global stats:", error);
-      }
-    }
-
-    // Show alert message
-    function showAlert(message, type = 'info') {
-      const alertMsg = document.getElementById('alert-message');
-      
-      alertMsg.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
-        ${message}
-      `;
-      
-      alertMsg.style.color = type === 'success' ? 'var(--success)' : 
-                           type === 'error' ? 'var(--danger)' : 'var(--accent)';
-      alertMsg.style.display = 'block';
-      
-      setTimeout(() => {
-        alertMsg.style.display = 'none';
-      }, 5000);
-    }
-
-    // Initialize on DOM loaded
+    
+    // Initialize the app
     document.addEventListener("DOMContentLoaded", function() {
-      initApp();
+      // Initialize the mining page
+      initPoints();
       
-      // Initialize task tab clicks
-      document.querySelectorAll('.task-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-          document.querySelectorAll('.task-tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.task-content').forEach(c => c.classList.remove('active'));
-          
-          this.classList.add('active');
-          const tabId = this.getAttribute('data-tab');
-          document.getElementById(tabId).classList.add('active');
-        });
-      });
+      // Start points update
+      setInterval(updatePoints, 1000);
     });
   </script>
 </body>
