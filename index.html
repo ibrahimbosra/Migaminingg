@@ -1060,7 +1060,7 @@
             <div class="badge bronze-badge">
               Bronze
             </div> 
-            <div class="circle-card" data-days="7" onclick="handlePlanClick(0.5,7,1,this)"> 
+            <div class="circle-card" data-days="7" data-plan="bronze"> 
               <div class="days-title">
                 7 Days
               </div> 
@@ -1080,7 +1080,7 @@
             <div class="badge silver-badge">
               Silver
             </div> 
-            <div class="circle-card" data-days="15" onclick="handlePlanClick(0.75,15,1.5,this)"> 
+            <div class="circle-card" data-days="15" data-plan="silver"> 
               <div class="days-title">
                 15 Days
               </div> 
@@ -1102,7 +1102,7 @@
             <div class="badge gold-badge">
               Gold
             </div> 
-            <div class="circle-card special" data-days="30" onclick="handlePlanClick(1,30,2,this)"> 
+            <div class="circle-card special" data-days="30" data-plan="gold"> 
               <div class="days-title">
                 30 Days
               </div> 
@@ -1124,7 +1124,7 @@
             <div class="badge platinum-badge">
               Platinum
             </div> 
-            <div class="circle-card" data-days="60" onclick="handlePlanClick(1.5,60,3,this)"> 
+            <div class="circle-card" data-days="60" data-plan="platinum"> 
               <div class="days-title">
                 60 Days
               </div> 
@@ -1144,7 +1144,7 @@
             <div class="badge diamond-badge">
               Diamond
             </div> 
-            <div class="circle-card" data-days="90" onclick="handlePlanClick(2,90,4,this)"> 
+            <div class="circle-card" data-days="90" data-plan="diamond"> 
               <div class="days-title">
                 90 Days
               </div> 
@@ -1162,7 +1162,7 @@
           </div> 
         </div> 
         <div class="centered-row"> 
-          <div id="free-claim" class="circle-card free" onclick="collectFreePoints(this)"> 
+          <div id="free-claim" class="circle-card free"> 
             <span class="miga-points">100</span> 
             <span class="days-title">Free Claim</span> 
           </div> 
@@ -1295,34 +1295,69 @@
     // Global Variables
     let currentUser = null;
     let currentUserId = null;
-    let walletConnected = false;
     let userData = null;
     let miningChart = null;
-    
-    // Mining variables from original code
-    const FREE_DAILY_LIMIT = 100;
-    const FREE_PERIOD_MS = 24 * 3600 * 1000;  // 24 hours
-    const DAILY_POINTS_PER_PLAN = 500; // points per plan per day
-    
-    // Free bonus data
-    let freeData = JSON.parse(localStorage.getItem("freeData")) || {
-      lastReset: 0,
-      remaining: FREE_DAILY_LIMIT
-    };
-    
-    // Points and plans data
-    let pointsData = JSON.parse(localStorage.getItem("pointsData")) || {
-      totalPoints: 0,
-      activePlans: [],
-      hasEverActivatedPlan: false,
-      dailyPoints: 0,
-      weeklyPoints: 0,
-      monthlyPoints: 0,
-      allTimePoints: 0
-    };
-    
-    let globalRate = 0;
     let tonConnectUI = null;
+    let walletConnected = false;
+    
+    // تعريف الخطط كما في الملف الأول
+    const PLANS = {
+      '7': { 
+        name: 'Bronze', 
+        plan_name: 'bronze',
+        days: 7, 
+        multiplier: 1, 
+        badge: 'badge-bronze',
+        daily_miga: 500,
+        total_miga: 3500,
+        ton_amount: 0.5,
+        mining_rate: 500 / (24 * 60 * 60)
+      },
+      '15': { 
+        name: 'Silver', 
+        plan_name: 'silver',
+        days: 15, 
+        multiplier: 1.5, 
+        badge: 'badge-silver',
+        daily_miga: 750,
+        total_miga: 11250,
+        ton_amount: 0.75,
+        mining_rate: 750 / (24 * 60 * 60)
+      },
+      '30': { 
+        name: 'Gold', 
+        plan_name: 'gold',
+        days: 30, 
+        multiplier: 2, 
+        badge: 'badge-gold',
+        daily_miga: 1000,
+        total_miga: 30000,
+        ton_amount: 1,
+        mining_rate: 1000 / (24 * 60 * 60)
+      },
+      '60': { 
+        name: 'Platinum', 
+        plan_name: 'platinum',
+        days: 60, 
+        multiplier: 3, 
+        badge: 'badge-platinum',
+        daily_miga: 1500,
+        total_miga: 90000,
+        ton_amount: 1.5,
+        mining_rate: 1500 / (24 * 60 * 60)
+      },
+      '90': { 
+        name: 'Diamond', 
+        plan_name: 'diamond',
+        days: 90, 
+        multiplier: 4, 
+        badge: 'badge-diamond',
+        daily_miga: 2000,
+        total_miga: 180000,
+        ton_amount: 2,
+        mining_rate: 2000 / (24 * 60 * 60)
+      }
+    };
 
     // Get URL parameter
     function getQueryParam(param) {
@@ -1449,6 +1484,7 @@
           last_bonus_claim: null,
           total_referral_earnings: 0,
           mining_speed: 0,
+          status: 'inactive',
           rank: 0
         };
         
@@ -1468,6 +1504,7 @@
         userData = snapshot.val();
         if (userData) {
           updateUIWithUserData();
+          updateMiningDisplay();
         }
       });
     }
@@ -1479,13 +1516,174 @@
       // Home page
       document.getElementById('userName').textContent = userData.first_name;
       document.getElementById('userUsername').textContent = "@" + userData.username;
-      document.getElementById('userTotalMiga').textContent = userData.total_miga.toLocaleString();
+      document.getElementById('userTotalMiga').textContent = userData.total_miga?.toFixed(6) || '0';
       
-      // Update global points from user data
-      if (userData.total_miga > 0) {
-        pointsData.totalPoints = userData.total_miga;
-        savePointsData();
-        updatePointsDisplay();
+      // Update mining stats
+      document.getElementById('points-total').textContent = userData.total_miga?.toFixed(6) || '0';
+      document.getElementById('active-plans').textContent = userData.active_plans?.length || '0';
+      
+      // Calculate mining speed
+      let totalDailyMiga = 0;
+      if (userData.active_plans && Array.isArray(userData.active_plans)) {
+        userData.active_plans.forEach(plan => {
+          if (plan.status === 'active') {
+            const planInfo = PLANS[plan.days];
+            if (planInfo) {
+              totalDailyMiga += planInfo.daily_miga;
+            }
+          }
+        });
+      }
+      
+      const miningSpeed = totalDailyMiga / (24 * 60 * 60); // Convert to Mg/s
+      document.getElementById('points-rate').textContent = miningSpeed.toFixed(6);
+    }
+
+    // Update mining display with active plans
+    function updateMiningDisplay() {
+      if (!userData || !userData.active_plans) return;
+      
+      // Reset all circle cards
+      document.querySelectorAll('.circle-card').forEach(card => {
+        card.classList.remove('active-pulse');
+        const badge = card.parentElement.querySelector('.badge');
+        if (badge) badge.classList.remove('badge-pulse');
+        
+        const cd = card.querySelector(".countdown-timer");
+        const mp = card.querySelector(".miga-points");
+        
+        if (cd) {
+          cd.style.display = "none";
+          cd.textContent = "";
+        }
+        if (mp) mp.textContent = "0.00 mg";
+        
+        // Clear any existing timer
+        if (card._timer) clearInterval(card._timer);
+      });
+      
+      // Update each active plan
+      userData.active_plans.forEach(plan => {
+        if (plan.status === 'active') {
+          const circleCard = document.querySelector(`.circle-card[data-days="${plan.days}"]`);
+          if (!circleCard) return;
+          
+          startPlanTimer(plan, circleCard);
+        }
+      });
+      
+      // Update free claim button
+      updateFreeClaimButton();
+    }
+
+    // Start timer for a plan
+    function startPlanTimer(plan, circleCard) {
+      circleCard.classList.add("active-pulse");
+      const badge = circleCard.parentElement.querySelector('.badge');
+      if (badge) badge.classList.add("badge-pulse");
+      
+      const cd = circleCard.querySelector(".countdown-timer");
+      const mp = circleCard.querySelector(".miga-points");
+      
+      if (cd) cd.style.display = "block";
+      if (mp) mp.textContent = `${plan.mined_so_far?.toFixed(6) || '0.00'} mg`;
+      
+      // Clear any existing timer
+      if (circleCard._timer) clearInterval(circleCard._timer);
+      
+      circleCard._timer = setInterval(() => {
+        if (!plan.end_time) return;
+        
+        const endTime = new Date(plan.end_time);
+        const now = new Date();
+        const timeRemaining = endTime - now;
+        
+        if (timeRemaining <= 0) {
+          clearInterval(circleCard._timer);
+          circleCard.classList.remove("active-pulse");
+          if (badge) badge.classList.remove("badge-pulse");
+          if (cd) {
+            cd.textContent = "Completed";
+            setTimeout(() => {
+              cd.style.display = "none";
+            }, 5000);
+          }
+          return;
+        }
+        
+        // Update countdown
+        if (cd) {
+          const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+          
+          cd.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        // Update mined amount from Firebase data
+        if (mp) mp.textContent = `${plan.mined_so_far?.toFixed(6) || '0.00'} mg`;
+      }, 1000);
+    }
+
+    // Update free claim button
+    function updateFreeClaimButton() {
+      const freeBtn = document.getElementById("free-claim");
+      if (!freeBtn || !userData) return;
+      
+      const now = new Date();
+      const lastClaim = userData.last_bonus_claim ? new Date(userData.last_bonus_claim) : null;
+      const canClaim = !lastClaim || (now - lastClaim) >= 24 * 60 * 60 * 1000;
+      
+      if (userData.active_plans?.length > 0 && canClaim && !userData.daily_bonus_claimed) {
+        freeBtn.classList.add("active");
+        freeBtn.classList.remove("disabled");
+        freeBtn.querySelector(".miga-points").textContent = "100";
+        freeBtn.querySelector(".days-title").textContent = "Free Claim";
+        
+        // Add click event
+        freeBtn.onclick = () => claimDailyBonus();
+      } else {
+        freeBtn.classList.remove("active");
+        freeBtn.classList.add("disabled");
+        
+        if (!canClaim && lastClaim) {
+          const nextClaim = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);
+          const timeLeft = nextClaim - now;
+          const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+          
+          freeBtn.querySelector(".miga-points").textContent = `${hours}h ${minutes}m`;
+          freeBtn.querySelector(".days-title").textContent = "Next Bonus";
+        } else {
+          freeBtn.querySelector(".miga-points").textContent = "Bonus";
+          freeBtn.querySelector(".days-title").textContent = "Available";
+        }
+        
+        freeBtn.onclick = null;
+      }
+    }
+
+    // Claim daily bonus
+    async function claimDailyBonus() {
+      if (!currentUserId || !userData) return;
+      
+      try {
+        await database.ref('users/' + currentUserId).update({
+          daily_bonus_claimed: true,
+          last_bonus_claim: new Date().toISOString(),
+          total_miga: (userData.total_miga || 0) + 100,
+          daily_miga: (userData.daily_miga || 0) + 100,
+          weekly_miga: (userData.weekly_miga || 0) + 100,
+          monthly_miga: (userData.monthly_miga || 0) + 100
+        });
+        
+        showAlert("Daily bonus claimed! +100 Mg", "success");
+        updateFreeClaimButton();
+        
+      } catch (error) {
+        console.error("Error claiming daily bonus:", error);
+        showAlert("Error claiming bonus", "error");
       }
     }
 
@@ -1527,6 +1725,125 @@
       }
     }
 
+    // MINING PAGE FUNCTIONS
+    function initMiningPage() {
+      // Initialize TON Connect
+      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: "https://ibrahimbosra.github.io/Pay/tonconnect-manifest.json",
+        buttonRootId: "ton-connect",
+        language: "en"
+      });
+      
+      // Update wallet status
+      tonConnectUI.onStatusChange(info => {
+        walletConnected = !!(info && info.account);
+        if (!walletConnected) {
+          document.getElementById("wallet-message").style.display = "block";
+        } else {
+          document.getElementById("wallet-message").style.display = "none";
+        }
+      });
+      
+      // Add click events to plan cards
+      document.querySelectorAll('.circle-card[data-days]').forEach(card => {
+        card.addEventListener('click', function() {
+          const days = parseInt(this.getAttribute('data-days'));
+          const plan = PLANS[days];
+          if (plan) {
+            handlePlanClick(plan.ton_amount, days, plan.multiplier, this);
+          }
+        });
+      });
+    }
+
+    // Handle plan purchase
+    async function handlePlanClick(priceTon, days, multiplier, circleCard) {
+      if (!walletConnected) {
+        if (tonConnectUI) {
+          tonConnectUI.openModal();
+        }
+        document.getElementById("wallet-message").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("wallet-message").style.display = "none";
+        }, 5000);
+        return;
+      }
+      
+      // Check if plan is already active
+      if (userData && userData.active_plans) {
+        const isAlreadyActive = userData.active_plans.some(plan => 
+          plan.days === days && plan.status === 'active'
+        );
+        
+        if (isAlreadyActive) {
+          document.getElementById("plan-message").innerHTML = 
+            `<i class="fas fa-info-circle"></i> This plan is already active!`;
+          document.getElementById("plan-message").style.display = "block";
+          setTimeout(() => {
+            document.getElementById("plan-message").style.display = "none";
+          }, 3000);
+          return;
+        }
+      }
+      
+      const planInfo = PLANS[days];
+      if (!planInfo) return;
+      
+      // Create plan data
+      const planData = {
+        plan_name: planInfo.plan_name,
+        days: planInfo.days,
+        ton_amount: planInfo.ton_amount,
+        multiplier: planInfo.multiplier,
+        daily_miga: planInfo.daily_miga,
+        start_time: new Date().toISOString(),
+        end_time: new Date(Date.now() + (planInfo.days * 24 * 60 * 60 * 1000)).toISOString(),
+        last_update: new Date().toISOString(),
+        mined_so_far: 0,
+        status: "active",
+        total_miga: planInfo.total_miga
+      };
+      
+      try {
+        // Add plan to user's active plans
+        const userRef = database.ref('users/' + currentUserId);
+        const activePlans = userData?.active_plans ? [...userData.active_plans] : [];
+        activePlans.push(planData);
+        
+        await userRef.update({
+          active_plans: activePlans,
+          status: 'active',
+          updated_at: new Date().toISOString()
+        });
+        
+        // Show success message
+        showAlert(`${planInfo.name} plan activated!`, 'success');
+        
+        // Update global stats
+        const globalRef = database.ref('global/stats');
+        globalRef.transaction((stats) => {
+          if (stats) {
+            stats.total_plans_purchased = (stats.total_plans_purchased || 0) + 1;
+            stats.active_miners = (stats.active_miners || 0) + 1;
+          }
+          return stats;
+        });
+        
+        // Start timer for the plan
+        startPlanTimer(planData, circleCard);
+        
+        // Redirect to TON payment
+        window.location.href =
+          `ton://transfer/UQADR_wO9cnAQYUGErMlhP57EFWK78aubu20uxUw-n63Tuo4?amount=${
+            Math.floor(priceTon * 1e9)
+          }&text=Miga%20Mining`;
+          
+      } catch (error) {
+        console.error("Error activating plan:", error);
+        showAlert("Error activating plan", "error");
+      }
+    }
+
     // Home Page
     function initHomePage() {
       updateGlobalStats();
@@ -1540,10 +1857,10 @@
         statsRef.on('value', (snapshot) => {
           const stats = snapshot.val() || {};
           
-          document.getElementById('totalUsers').textContent = stats.total_users || '0';
+          document.getElementById('totalUsers').textContent = stats.total_users?.toLocaleString() || '0';
           document.getElementById('totalMigaMined').textContent = 
             stats.total_miga_mined ? Math.floor(stats.total_miga_mined).toLocaleString() : '0';
-          document.getElementById('activeMiners').textContent = stats.active_miners || '0';
+          document.getElementById('activeMiners').textContent = stats.active_miners?.toLocaleString() || '0';
           
           // Calculate user rank
           if (userData && userData.total_miga) {
@@ -1718,390 +2035,6 @@
       });
     }
 
-    // MINING PAGE FUNCTIONS - EXACTLY LIKE ORIGINAL
-    function initMiningPage() {
-      // Initialize TON Connect
-      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: "https://ibrahimbosra.github.io/Pay/tonconnect-manifest.json",
-        buttonRootId: "ton-connect",
-        language: "en"
-      });
-      
-      // Update wallet status
-      tonConnectUI.onStatusChange(info => {
-        walletConnected = !!(info && info.account);
-        if (!walletConnected) {
-          document.getElementById("wallet-message").style.display = "block";
-        }
-      });
-      
-      // Initialize points system
-      initPoints();
-      
-      // Start points update
-      setInterval(updatePoints, 1000);
-    }
-    
-    function initPoints() {
-      recalcGlobalRate();
-      updatePointsDisplay();
-      resetFreeIfNeeded();
-      toggleFreeClaim();
-      updateStats();
-      
-      // Start timers for active plans
-      pointsData.activePlans.forEach(plan => {
-        const el = document.querySelector(`.circle-card[data-days="${plan.days}"]`);
-        if (el) startMining(plan, el);
-      });
-    }
-    
-    // Recalculate global rate
-    function recalcGlobalRate() {
-      globalRate = pointsData.activePlans.reduce((sum, plan) => {
-        return sum + (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
-      }, 0);
-    }
-    
-    // Update points
-    function updatePoints() {
-      pointsData.totalPoints += globalRate;
-      pointsData.allTimePoints += globalRate;
-      
-      // Update time-based stats
-      const now = new Date();
-      if (pointsData.lastUpdate) {
-        if (isSameDay(new Date(pointsData.lastUpdate), now)) {
-          pointsData.dailyPoints += globalRate;
-        } else {
-          pointsData.dailyPoints = globalRate;
-        }
-        
-        if (isSameWeek(new Date(pointsData.lastUpdate), now)) {
-          pointsData.weeklyPoints += globalRate;
-        } else {
-          pointsData.weeklyPoints = globalRate;
-        }
-        
-        if (isSameMonth(new Date(pointsData.lastUpdate), now)) {
-          pointsData.monthlyPoints += globalRate;
-        } else {
-          pointsData.monthlyPoints = globalRate;
-        }
-      } else {
-        pointsData.dailyPoints = globalRate;
-        pointsData.weeklyPoints = globalRate;
-        pointsData.monthlyPoints = globalRate;
-      }
-      
-      pointsData.lastUpdate = Date.now();
-      savePointsData();
-      updatePointsDisplay();
-      
-      // Update user data in Firebase if logged in
-      if (currentUserId && userData) {
-        database.ref('users/' + currentUserId).update({
-          total_miga: pointsData.totalPoints,
-          mining_speed: globalRate * 86400 // Convert to per day
-        });
-      }
-    }
-    
-    // Helper functions for date comparisons
-    function isSameDay(d1, d2) {
-      return d1.getFullYear() === d2.getFullYear() &&
-             d1.getMonth() === d2.getMonth() &&
-             d1.getDate() === d2.getDate();
-    }
-    
-    function isSameWeek(d1, d2) {
-      const oneDay = 24*60*60*1000;
-      const diffDays = Math.round(Math.abs((d1 - d2) / oneDay));
-      return diffDays < 7 && d1.getDay() <= d2.getDay();
-    }
-    
-    function isSameMonth(d1, d2) {
-      return d1.getFullYear() === d2.getFullYear() &&
-             d1.getMonth() === d2.getMonth();
-    }
-    
-    // Update points display
-    function updatePointsDisplay() {
-      document.getElementById("points-total").textContent = pointsData.totalPoints.toFixed(4);
-      document.getElementById("points-rate").textContent = globalRate.toFixed(4);
-    }
-    
-    // Update stats
-    function updateStats() {
-      document.getElementById("active-plans").textContent = pointsData.activePlans.length;
-    }
-    
-    // Save points data
-    function savePointsData() {
-      localStorage.setItem("pointsData", JSON.stringify(pointsData));
-    }
-    
-    // Reset daily bonus if needed
-    function resetFreeIfNeeded() {
-      const now = Date.now();
-      if (now - freeData.lastReset >= FREE_PERIOD_MS) {
-        freeData.lastReset = now;
-        freeData.remaining = FREE_DAILY_LIMIT;
-        localStorage.setItem("freeData", JSON.stringify(freeData));
-      }
-    }
-    
-    // Update free claim button state
-    function toggleFreeClaim() {
-      resetFreeIfNeeded();
-      const btn = document.getElementById("free-claim");
-      const now = Date.now();
-      const timeLeft = (freeData.lastReset + FREE_PERIOD_MS) - now;
-      
-      if (pointsData.activePlans.length > 0 && freeData.remaining > 0) {
-        btn.classList.add("active");
-        btn.classList.remove("disabled");
-        btn.querySelector(".miga-points")
-           .innerText = `${freeData.remaining}`;
-        btn.querySelector(".days-title")
-           .innerText = `Free Claim`;
-      } else {
-        btn.classList.remove("active");
-        btn.classList.add("disabled");
-        if (freeData.remaining <= 0) {
-          const h = Math.floor(timeLeft/3600000);
-          const m = Math.floor((timeLeft%3600000)/60000);
-          const s = Math.floor((timeLeft%60000)/1000);
-          btn.querySelector(".miga-points")
-             .innerText = `Wait ${h}h ${m}m ${s}s`;
-          btn.querySelector(".days-title")
-             .innerText = ``;
-        } else {
-          btn.querySelector(".miga-points").innerText = `Bonus`;
-          btn.querySelector(".days-title")
-             .innerText = `Available`;
-        }
-      }
-    }
-    
-    // Claim free points
-    function collectFreePoints(el) {
-      if (collectFreePoints.locked) return;
-      collectFreePoints.locked = true;
-      setTimeout(() => { collectFreePoints.locked = false; }, 1000);
-      
-      if (!pointsData.hasEverActivatedPlan) {
-        document.getElementById('alert-message').innerHTML = '<i class="fas fa-exclamation-triangle"></i> You need to activate at least one plan first';
-        document.getElementById('alert-message').style.display = 'block';
-        setTimeout(() => {
-          document.getElementById('alert-message').style.display = 'none';
-        }, 5000);
-        return;
-      }
-      
-      if (!el.classList.contains("active")) {
-        toggleFreeClaim();
-        return;
-      }
-      
-      const bonus = 1;
-      freeData.remaining = Math.max(0, freeData.remaining - bonus);
-      freeData.lastReset = freeData.lastReset;
-      localStorage.setItem("freeData", JSON.stringify(freeData));
-      
-      pointsData.totalPoints += bonus;
-      pointsData.allTimePoints += bonus;
-      pointsData.dailyPoints += bonus;
-      savePointsData();
-      updatePointsDisplay();
-      
-      const coin = document.createElement("div");
-      coin.innerHTML = '<i class="fas fa-coins" style="color: gold; font-size: 20px;"></i>';
-      coin.style.position = "absolute";
-      coin.style.left = `${el.getBoundingClientRect().left + el.offsetWidth/2}px`;
-      coin.style.top = `${el.getBoundingClientRect().top}px`;
-      coin.style.zIndex = "1000";
-      coin.style.opacity = "1";
-      coin.style.transition = "all 1s ease";
-      document.body.appendChild(coin);
-      
-      setTimeout(() => {
-        const pointsDisplay = document.getElementById("points-total");
-        const pointsRect = pointsDisplay.getBoundingClientRect();
-        coin.style.left = `${pointsRect.left}px`;
-        coin.style.top = `${pointsRect.top}px`;
-        coin.style.opacity = "0";
-        coin.style.transform = "scale(0.5)";
-      }, 100);
-      
-      setTimeout(() => {
-        coin.remove();
-      }, 1100);
-      
-      el.classList.add("collected");
-      setTimeout(() => el.classList.remove("collected"), 800);
-      
-      toggleFreeClaim();
-      
-      // Update Firebase if user is logged in
-      if (currentUserId && userData) {
-        database.ref('users/' + currentUserId).update({
-          total_miga: pointsData.totalPoints
-        });
-      }
-    }
-    
-    function showPlanMessage() {
-      document.getElementById("plan-message").style.display = "block";
-      setTimeout(() => {
-        document.getElementById("plan-message").style.display = "none";
-      }, 3000);
-    }
-    
-    function handlePlanClick(priceTon, days, multiplier, el) {
-      if (!walletConnected) {
-        if (tonConnectUI) {
-          tonConnectUI.openModal();
-        }
-        document.getElementById("wallet-message").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("wallet-message").style.display = "none";
-        }, 5000);
-        return;
-      }
-      
-      if (pointsData.activePlans.find(p => p.days === days)) {
-        document.getElementById("plan-message").innerHTML = 
-          `<i class="fas fa-info-circle"></i> This plan is already active!`;
-        showPlanMessage();
-        return;
-      }
-      
-      const plan = {
-        days, multiplier,
-        startTime: Date.now(),
-        accumulatedPoints: 0
-      };
-      
-      pointsData.activePlans.push(plan);
-      pointsData.hasEverActivatedPlan = true; 
-      savePointsData();
-      recalcGlobalRate();
-      updatePointsDisplay();
-      updateStats();
-      startMining(plan, el);
-      toggleFreeClaim();
-      
-      // Update Firebase if user is logged in
-      if (currentUserId) {
-        const planData = {
-          plan_name: getPlanName(days),
-          days: days,
-          ton_amount: priceTon,
-          multiplier: multiplier,
-          daily_miga: 500 * multiplier,
-          start_time: new Date().toISOString(),
-          end_time: new Date(Date.now() + (days * 24 * 60 * 60 * 1000)).toISOString(),
-          status: 'active'
-        };
-        
-        const activePlans = userData?.active_plans || [];
-        activePlans.push(planData);
-        
-        database.ref('users/' + currentUserId).update({
-          active_plans: activePlans,
-          hasEverActivatedPlan: true
-        });
-        
-        // Update global stats
-        database.ref('global/stats').transaction((stats) => {
-          if (stats) {
-            stats.total_plans_purchased = (stats.total_plans_purchased || 0) + 1;
-            stats.active_miners = (stats.active_miners || 0) + 1;
-          }
-          return stats;
-        });
-      }
-      
-      window.location.href =
-        `ton://transfer/UQADR_wO9cnAQYUGErMlhP57EFWK78aubu20uxUw-n63Tuo4?amount=${
-          Math.floor(priceTon*1e9)
-        }&text=Miga%20Mining`;
-    }
-    
-    function getPlanName(days) {
-      switch(days) {
-        case 7: return 'Bronze';
-        case 15: return 'Silver';
-        case 30: return 'Gold';
-        case 60: return 'Platinum';
-        case 90: return 'Diamond';
-        default: return 'Unknown';
-      }
-    }
-    
-    function startMining(plan, el) {
-      el.classList.add("active-pulse");
-      const badge = el.parentElement.querySelector('.badge');
-      if (badge) badge.classList.add("badge-pulse");
-      
-      const totalSec = plan.days * 86400;
-      let elapsed = Math.floor((Date.now() - plan.startTime)/1000);
-      const cd = el.querySelector(".countdown-timer");
-      const mp = el.querySelector(".miga-points");
-            
-      if (el._timer) clearInterval(el._timer);
-      
-      cd.style.display = "block";
-      
-      el._timer = setInterval(() => {
-        elapsed++;
-        const rem = totalSec - elapsed;
-        
-        if (rem < 0) {
-          clearInterval(el._timer);
-          el.classList.remove("active-pulse");
-          if (badge) badge.classList.remove("badge-pulse");
-          cd.innerText = "Completed";
-          pointsData.activePlans =
-            pointsData.activePlans.filter(p => p.days !== plan.days);
-          savePointsData();
-          recalcGlobalRate();
-          updatePointsDisplay();
-          updateStats();
-          toggleFreeClaim();
-          
-          // Update Firebase
-          if (currentUserId && userData) {
-            const activePlans = userData.active_plans || [];
-            const updatedPlans = activePlans.filter(p => 
-              p.days !== plan.days || p.status !== 'active'
-            );
-            
-            database.ref('users/' + currentUserId).update({
-              active_plans: updatedPlans
-            });
-          }
-          
-          setTimeout(() => {
-            cd.style.display = "none";
-          }, 5000);
-          return;
-        }
-        
-        const d = Math.floor(rem/86400),
-              h = Math.floor((rem%86400)/3600),
-              m = Math.floor((rem%3600)/60),
-              s = rem%60;
-              
-        cd.innerText = `${d}d ${h}h ${m}m ${s}s`;
-        plan.accumulatedPoints += (plan.multiplier * DAILY_POINTS_PER_PLAN) / 86400;
-        
-        mp.innerText = `${plan.accumulatedPoints.toFixed(2)} mg`;
-        savePointsData();
-      }, 1000);
-    }
-
     // Tasks Page
     function initTasksPage() {
       loadTasks();
@@ -2114,7 +2047,42 @@
         const snapshot = await tasksRef.once('value');
         const tasks = snapshot.val();
         
-        if (!tasks) return;
+        if (!tasks) {
+          // Create default tasks if none exist
+          const defaultTasks = {
+            daily_1: {
+              name: "Daily Login",
+              description: "Log in to claim your daily reward",
+              category: "daily",
+              reward: 50,
+              max_progress: 1
+            },
+            daily_2: {
+              name: "Mine for 1 hour",
+              description: "Keep mining for at least 1 hour",
+              category: "daily",
+              reward: 100,
+              max_progress: 3600
+            },
+            weekly_1: {
+              name: "Weekly Mining",
+              description: "Mine for 7 days in a row",
+              category: "weekly",
+              reward: 500,
+              max_progress: 7
+            },
+            referral_1: {
+              name: "Invite 1 Friend",
+              description: "Invite your first friend to join",
+              category: "referral",
+              reward: 200,
+              max_progress: 1
+            }
+          };
+          
+          await tasksRef.set(defaultTasks);
+          tasks = defaultTasks;
+        }
         
         // Filter tasks by category
         const dailyTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'daily');
@@ -2148,7 +2116,7 @@
         const isCompleted = userData?.completed_tasks?.[taskId] || false;
         const progress = task.progress || 0;
         const maxProgress = task.max_progress || 1;
-        const progressPercent = (progress / maxProgress) * 100;
+        const progressPercent = Math.min((progress / maxProgress) * 100, 100);
         
         html += `
           <div class="task-item">
@@ -2192,21 +2160,6 @@
           daily_miga: (userData.daily_miga || 0) + reward,
           weekly_miga: (userData.weekly_miga || 0) + reward,
           monthly_miga: (userData.monthly_miga || 0) + reward
-        });
-        
-        // Update points data
-        pointsData.totalPoints += reward;
-        savePointsData();
-        updatePointsDisplay();
-        
-        // Update global stats
-        const globalRef = database.ref('global/stats');
-        const globalSnapshot = await globalRef.once('value');
-        const globalData = globalSnapshot.val() || {};
-        
-        await globalRef.update({
-          total_miga_mined: (globalData.total_miga_mined || 0) + reward,
-          tasks_completed: (globalData.tasks_completed || 0) + 1
         });
         
         // Show success message
@@ -2295,45 +2248,16 @@
 
     // Start real-time updates
     function startRealtimeUpdates() {
-      // Update mining every minute
-      setInterval(updateMining, 60000);
-      
-      // Update global stats every 5 minutes
-      setInterval(updateGlobalStatsFromUsers, 300000);
-    }
-
-    // Update global stats from all users
-    async function updateGlobalStatsFromUsers() {
-      try {
-        const usersRef = database.ref('users');
-        const snapshot = await usersRef.once('value');
-        
-        let totalUsers = 0;
-        let totalMiga = 0;
-        let activeMiners = 0;
-        
-        snapshot.forEach((childSnapshot) => {
-          const user = childSnapshot.val();
-          totalUsers++;
-          totalMiga += user.total_miga || 0;
-          
-          if (user.active_plans && user.active_plans.length > 0) {
-            const hasActivePlan = user.active_plans.some(plan => 
-              new Date(plan.end_time) > new Date() && plan.status === 'active'
-            );
-            if (hasActivePlan) activeMiners++;
+      // Update user data every 30 seconds
+      setInterval(async () => {
+        if (currentUserId) {
+          const snapshot = await database.ref('users/' + currentUserId).once('value');
+          userData = snapshot.val();
+          if (userData) {
+            updateMiningDisplay();
           }
-        });
-        
-        await database.ref('global/stats').update({
-          total_users: totalUsers,
-          total_miga_mined: totalMiga,
-          active_miners: activeMiners
-        });
-        
-      } catch (error) {
-        console.error("Error updating global stats:", error);
-      }
+        }
+      }, 30000);
     }
 
     // Show alert message
@@ -2357,18 +2281,6 @@
     // Initialize on DOM loaded
     document.addEventListener("DOMContentLoaded", function() {
       initApp();
-      
-      // Initialize task tab clicks
-      document.querySelectorAll('.task-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-          document.querySelectorAll('.task-tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.task-content').forEach(c => c.classList.remove('active'));
-          
-          this.classList.add('active');
-          const tabId = this.getAttribute('data-tab');
-          document.getElementById(tabId).classList.add('active');
-        });
-      });
     });
   </script>
 </body>
