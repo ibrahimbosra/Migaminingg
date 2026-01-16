@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miga Mining App - Real Data</title>
+  <title>Miga Mining App - Integrated Version</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -264,7 +264,7 @@
       padding: 10px;
     }
 
-    /* Mining Page Styles - UPDATED TO MATCH ORIGINAL */
+    /* Mining Page Styles */
     .mining-container {
       max-width: 480px;
       margin: 0 auto;
@@ -566,7 +566,6 @@
       padding: 0 15px;
     }
     
-    /* New Tasks Tab Styles */
     .task-tabs {
       display: flex;
       justify-content: space-between;
@@ -652,17 +651,56 @@
     .task-info {
       flex: 1;
       padding-right: 10px;
+      text-align: left;
     }
     
     .task-name {
       font-size: 14px;
       color: #ffffff;
       margin-bottom: 3px;
+      font-weight: 600;
     }
     
     .task-description {
       font-size: 12px;
       color: #aee9f7;
+      margin-bottom: 5px;
+    }
+    
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    
+    .task-badge {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    
+    .task-badge-type {
+      background: rgba(0, 123, 255, 0.2);
+      color: #80bdff;
+    }
+    
+    .task-badge-status {
+      background: rgba(40, 167, 69, 0.2);
+      color: #90ee90;
+    }
+    
+    .task-badge-inactive {
+      background: rgba(108, 117, 125, 0.2);
+      color: #b0b7c0;
+    }
+    
+    .task-link {
+      color: #80bdff;
+      font-size: 11px;
+      word-break: break-all;
+      margin-top: 3px;
     }
     
     .task-reward {
@@ -670,6 +708,7 @@
       color: var(--success);
       white-space: nowrap;
       margin-bottom: 5px;
+      font-weight: bold;
     }
     
     .task-button {
@@ -1015,7 +1054,7 @@
     </div>
   </div>
 
-  <!-- Mining Tab Content - UPDATED TO MATCH ORIGINAL -->
+  <!-- Mining Tab Content -->
   <div id="mining-tab" class="tab-content active">
     <div class="mining-container">
       <div class="plan-title">
@@ -1023,7 +1062,7 @@
       </div>
       <div id="ton-connect"></div>
       
-      <!-- Mining stats - UPDATED TO MATCH ORIGINAL -->
+      <!-- Mining stats -->
       <div class="stats-bar"> 
         <div class="stat-card"> 
           <div class="stat-label">
@@ -1202,7 +1241,9 @@
         <div class="task-category">
           <div class="category-title">Daily Tasks</div>
           <div class="task-list" id="dailyTasksList">
-            Loading tasks...
+            <div class="loading-indicator">
+              <i class="fas fa-spinner fa-spin"></i> Loading daily tasks...
+            </div>
           </div>
         </div>
       </div>
@@ -1212,7 +1253,9 @@
         <div class="task-category">
           <div class="category-title">Weekly Challenges</div>
           <div class="task-list" id="weeklyTasksList">
-            Loading tasks...
+            <div class="loading-indicator">
+              <i class="fas fa-spinner fa-spin"></i> Loading weekly tasks...
+            </div>
           </div>
         </div>
       </div>
@@ -1222,7 +1265,9 @@
         <div class="task-category">
           <div class="category-title">Referral Missions</div>
           <div class="task-list" id="referralTasksList">
-            Loading tasks...
+            <div class="loading-indicator">
+              <i class="fas fa-spinner fa-spin"></i> Loading referral tasks...
+            </div>
           </div>
         </div>
       </div>
@@ -1232,7 +1277,9 @@
         <div class="task-category">
           <div class="category-title">Special Missions</div>
           <div class="task-list" id="specialTasksList">
-            Loading tasks...
+            <div class="loading-indicator">
+              <i class="fas fa-spinner fa-spin"></i> Loading special tasks...
+            </div>
           </div>
         </div>
       </div>
@@ -1276,7 +1323,7 @@
   </div>
 
   <script>
-    // Firebase Configuration
+    // Firebase Configuration - Same as in first file
     const firebaseConfig = {
       apiKey: "AIzaSyBZZGMEtMsgd1igtipcG84tz98K9Tokb34",
       authDomain: "migamining-c6c20.firebaseapp.com",
@@ -1292,15 +1339,7 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Global Variables
-    let currentUser = null;
-    let currentUserId = null;
-    let userData = null;
-    let miningChart = null;
-    let tonConnectUI = null;
-    let walletConnected = false;
-    
-    // تعريف الخطط كما في الملف الأول
+    // تعريف الخطط - مطابق للكود الأول
     const PLANS = {
       '7': { 
         name: 'Bronze', 
@@ -1358,6 +1397,15 @@
         mining_rate: 2000 / (24 * 60 * 60)
       }
     };
+
+    // Global Variables
+    let currentUser = null;
+    let currentUserId = null;
+    let userData = null;
+    let miningChart = null;
+    let tonConnectUI = null;
+    let walletConnected = false;
+    let allTasks = {};
 
     // Get URL parameter
     function getQueryParam(param) {
@@ -1430,6 +1478,9 @@
           // Load user data
           await loadUserData();
           
+          // Load all tasks from database
+          await loadAllTasks();
+          
           // Initialize TON Connect for mining page
           initMiningPage();
           
@@ -1456,7 +1507,7 @@
       }
     }
 
-    // Initialize user in database
+    // Initialize user in database - متوافق مع قاعدة البيانات السابقة
     async function initUserInDatabase() {
       const userRef = database.ref('users/' + currentUserId);
       const snapshot = await userRef.once('value');
@@ -1465,7 +1516,7 @@
         // Check for referral
         const referrerId = getQueryParam('start');
         
-        // Create new user
+        // Create new user with structure matching the first file
         const userData = {
           telegram_id: currentUserId,
           username: currentUser.username || "no_username",
@@ -1485,7 +1536,15 @@
           total_referral_earnings: 0,
           mining_speed: 0,
           status: 'inactive',
-          rank: 0
+          rank: 0,
+          // Additional fields from first file structure
+          updated_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          verification_type: 'telegram',
+          language: 'en',
+          country: '',
+          total_earned: 0,
+          total_withdrawn: 0
         };
         
         await userRef.set(userData);
@@ -1494,6 +1553,22 @@
         if (referrerId && referrerId !== currentUserId) {
           await addReferral(referrerId, currentUserId);
         }
+      }
+    }
+
+    // Load all tasks from database - متوافق مع الكود الأول
+    async function loadAllTasks() {
+      try {
+        const tasksRef = database.ref('tasks');
+        const snapshot = await tasksRef.once('value');
+        allTasks = snapshot.val() || {};
+        
+        // إزالة الحقل last_updated إذا كان موجوداً
+        delete allTasks.last_updated;
+        
+        console.log("Loaded tasks:", Object.keys(allTasks).length);
+      } catch (error) {
+        console.error('خطأ في تحميل المهام:', error);
       }
     }
 
@@ -1586,7 +1661,28 @@
       const mp = circleCard.querySelector(".miga-points");
       
       if (cd) cd.style.display = "block";
-      if (mp) mp.textContent = `${plan.mined_so_far?.toFixed(6) || '0.00'} mg`;
+      
+      // Calculate mined amount
+      const calculateMinedAmount = () => {
+        if (!plan.start_time || !plan.end_time) return 0;
+        
+        const startTime = new Date(plan.start_time);
+        const endTime = new Date(plan.end_time);
+        const now = new Date();
+        
+        if (now >= endTime) {
+          return plan.total_miga || 0;
+        }
+        
+        const totalTime = endTime - startTime;
+        const elapsedTime = now - startTime;
+        const percentage = Math.min(elapsedTime / totalTime, 1);
+        
+        return (plan.total_miga || 0) * percentage;
+      };
+      
+      const minedAmount = calculateMinedAmount();
+      if (mp) mp.textContent = `${minedAmount.toFixed(6)} mg`;
       
       // Clear any existing timer
       if (circleCard._timer) clearInterval(circleCard._timer);
@@ -1621,8 +1717,9 @@
           cd.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         }
         
-        // Update mined amount from Firebase data
-        if (mp) mp.textContent = `${plan.mined_so_far?.toFixed(6) || '0.00'} mg`;
+        // Update mined amount
+        const updatedMinedAmount = calculateMinedAmount();
+        if (mp) mp.textContent = `${updatedMinedAmount.toFixed(6)} mg`;
       }, 1000);
     }
 
@@ -1675,7 +1772,8 @@
           total_miga: (userData.total_miga || 0) + 100,
           daily_miga: (userData.daily_miga || 0) + 100,
           weekly_miga: (userData.weekly_miga || 0) + 100,
-          monthly_miga: (userData.monthly_miga || 0) + 100
+          monthly_miga: (userData.monthly_miga || 0) + 100,
+          updated_at: new Date().toISOString()
         });
         
         showAlert("Daily bonus claimed! +100 Mg", "success");
@@ -1687,7 +1785,7 @@
       }
     }
 
-    // Add referral
+    // Add referral - متوافق مع الكود الأول
     async function addReferral(referrerId, newUserId) {
       try {
         const referrerRef = database.ref('users/' + referrerId);
@@ -1700,14 +1798,15 @@
           if (!referrals.includes(newUserId)) {
             referrals.push(newUserId);
             
-            // Update referrer data
+            // Update referrer data - مطابق لهيكل الكود الأول
             await referrerRef.update({
               referrals: referrals,
               total_referral_earnings: (referrerData.total_referral_earnings || 0) + 100,
               total_miga: (referrerData.total_miga || 0) + 100,
               daily_miga: (referrerData.daily_miga || 0) + 100,
               weekly_miga: (referrerData.weekly_miga || 0) + 100,
-              monthly_miga: (referrerData.monthly_miga || 0) + 100
+              monthly_miga: (referrerData.monthly_miga || 0) + 100,
+              updated_at: new Date().toISOString()
             });
             
             // Update global referral count
@@ -1716,7 +1815,8 @@
             const globalData = globalSnapshot.val() || { total_referrals: 0 };
             
             await globalRef.update({
-              total_referrals: (globalData.total_referrals || 0) + 1
+              total_referrals: (globalData.total_referrals || 0) + 1,
+              updated_at: new Date().toISOString()
             });
           }
         }
@@ -1756,7 +1856,7 @@
       });
     }
 
-    // Handle plan purchase
+    // Handle plan purchase - متوافق مع هيكل البيانات السابق
     async function handlePlanClick(priceTon, days, multiplier, circleCard) {
       if (!walletConnected) {
         if (tonConnectUI) {
@@ -1789,7 +1889,7 @@
       const planInfo = PLANS[days];
       if (!planInfo) return;
       
-      // Create plan data
+      // Create plan data - مطابق لهيكل الكود الأول
       const planData = {
         plan_name: planInfo.plan_name,
         days: planInfo.days,
@@ -1813,7 +1913,9 @@
         await userRef.update({
           active_plans: activePlans,
           status: 'active',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          // Update total Miga based on plan
+          total_miga: (userData.total_miga || 0) + planInfo.total_miga
         });
         
         // Show success message
@@ -1825,6 +1927,7 @@
           if (stats) {
             stats.total_plans_purchased = (stats.total_plans_purchased || 0) + 1;
             stats.active_miners = (stats.active_miners || 0) + 1;
+            stats.total_miga_mined = (stats.total_miga_mined || 0) + planInfo.total_miga;
           }
           return stats;
         });
@@ -1978,7 +2081,7 @@
       });
     }
 
-    // Update referral data
+    // Update referral data - متوافق مع هيكل الكود الأول
     async function updateReferralData() {
       if (!currentUserId) return;
       
@@ -2019,7 +2122,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td class="center">${index + 1}</td>
-              <td>${refData?.username || 'Unknown'} (ID: ${refId.slice(0, 6)}...)</td>
+              <td>${refData?.first_name || 'Unknown'} (${refData?.username || 'no_username'})</td>
               <td class="center">${refData?.join_date ? new Date(refData.join_date).toLocaleDateString() : 'Unknown'}</td>
               <td class="center">${refData?.active_plans?.length > 0 ? 'Active' : 'Inactive'}</td>
               <td class="center">100 Mg</td>
@@ -2035,73 +2138,34 @@
       });
     }
 
-    // Tasks Page
+    // Tasks Page - متوافق مع هيكل المهام من الكود الأول
     function initTasksPage() {
-      loadTasks();
+      renderAllTasks();
     }
 
-    // Load tasks from database
-    async function loadTasks() {
-      try {
-        const tasksRef = database.ref('tasks');
-        const snapshot = await tasksRef.once('value');
-        const tasks = snapshot.val();
-        
-        if (!tasks) {
-          // Create default tasks if none exist
-          const defaultTasks = {
-            daily_1: {
-              name: "Daily Login",
-              description: "Log in to claim your daily reward",
-              category: "daily",
-              reward: 50,
-              max_progress: 1
-            },
-            daily_2: {
-              name: "Mine for 1 hour",
-              description: "Keep mining for at least 1 hour",
-              category: "daily",
-              reward: 100,
-              max_progress: 3600
-            },
-            weekly_1: {
-              name: "Weekly Mining",
-              description: "Mine for 7 days in a row",
-              category: "weekly",
-              reward: 500,
-              max_progress: 7
-            },
-            referral_1: {
-              name: "Invite 1 Friend",
-              description: "Invite your first friend to join",
-              category: "referral",
-              reward: 200,
-              max_progress: 1
-            }
-          };
-          
-          await tasksRef.set(defaultTasks);
-          tasks = defaultTasks;
-        }
-        
-        // Filter tasks by category
-        const dailyTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'daily');
-        const weeklyTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'weekly');
-        const referralTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'referral');
-        const specialTasks = Object.entries(tasks).filter(([_, task]) => task.category === 'special');
-        
-        // Render tasks
-        renderTaskList('dailyTasksList', dailyTasks);
-        renderTaskList('weeklyTasksList', weeklyTasks);
-        renderTaskList('referralTasksList', referralTasks);
-        renderTaskList('specialTasksList', specialTasks);
-        
-      } catch (error) {
-        console.error("Error loading tasks:", error);
+    // Render all tasks based on category
+    function renderAllTasks() {
+      if (!allTasks || Object.keys(allTasks).length === 0) {
+        loadAllTasks().then(() => {
+          renderTaskList('dailyTasksList', filterTasksByCategory('daily'));
+          renderTaskList('weeklyTasksList', filterTasksByCategory('weekly'));
+          renderTaskList('referralTasksList', filterTasksByCategory('referral'));
+          renderTaskList('specialTasksList', filterTasksByCategory('special'));
+        });
+      } else {
+        renderTaskList('dailyTasksList', filterTasksByCategory('daily'));
+        renderTaskList('weeklyTasksList', filterTasksByCategory('weekly'));
+        renderTaskList('referralTasksList', filterTasksByCategory('referral'));
+        renderTaskList('specialTasksList', filterTasksByCategory('special'));
       }
     }
 
-    // Render task list
+    // Filter tasks by category
+    function filterTasksByCategory(category) {
+      return Object.entries(allTasks).filter(([_, task]) => task.category === category);
+    }
+
+    // Render task list - مطابق لهيكل الكود الأول
     function renderTaskList(elementId, tasks) {
       const element = document.getElementById(elementId);
       if (!element) return;
@@ -2113,30 +2177,68 @@
       
       let html = '';
       tasks.forEach(([taskId, task]) => {
+        // Check if task is completed
         const isCompleted = userData?.completed_tasks?.[taskId] || false;
         const progress = task.progress || 0;
         const maxProgress = task.max_progress || 1;
         const progressPercent = Math.min((progress / maxProgress) * 100, 100);
         
+        // Get reward text based on reward type
+        let rewardText = '';
+        let rewardValue = 0;
+        
+        if (task.reward_type === 'miga') {
+          rewardText = `${task.reward_value} Miga`;
+          rewardValue = task.reward_value;
+        } else if (task.reward_type === 'plan') {
+          const plan = PLANS[task.reward_value];
+          rewardText = `${plan?.name || 'Plan'} (${task.reward_value} days)`;
+          rewardValue = plan?.total_miga || 0;
+        } else if (task.reward_type === 'both') {
+          const plan = PLANS[task.reward_value?.plan];
+          const miga = task.reward_value?.miga || 0;
+          rewardText = `${plan?.name || 'Plan'} + ${miga} Miga`;
+          rewardValue = (plan?.total_miga || 0) + miga;
+        }
+        
+        // Get task type badge
+        const taskTypeBadge = task.task_type === 'flexible' ? 
+          '<span class="task-badge task-badge-type">Flexible</span>' : 
+          '<span class="task-badge task-badge-type">Static</span>';
+        
+        // Get status badge
+        const statusBadge = task.status === 'active' ? 
+          '<span class="task-badge task-badge-status">Active</span>' : 
+          '<span class="task-badge task-badge-inactive">Inactive</span>';
+        
         html += `
           <div class="task-item">
             <div class="task-info">
               <div class="task-name">${task.name}</div>
-              <div class="task-description">${task.description}</div>
-              ${task.max_progress > 1 ? `
+              <div class="task-description">${task.description || 'No description'}</div>
+              <div class="task-meta">
+                ${taskTypeBadge}
+                ${statusBadge}
+              </div>
+              ${task.link ? `
+                <div class="task-link">
+                  <i class="fas fa-link"></i> ${task.link}
+                </div>
+              ` : ''}
+              ${maxProgress > 1 ? `
                 <div class="progress-bar">
                   <div class="progress-fill" style="width: ${progressPercent}%"></div>
                 </div>
                 <div style="font-size:11px; color:#aee9f7; margin-top:2px;">
-                  ${progress}/${maxProgress}
+                  Progress: ${progress}/${maxProgress}
                 </div>
               ` : ''}
             </div>
             <div>
-              <div class="task-reward">+${task.reward} Miga</div>
+              <div class="task-reward">${rewardText}</div>
               <button class="task-button" 
                 ${isCompleted ? 'disabled' : ''}
-                onclick="claimTaskReward('${taskId}', ${task.reward})">
+                onclick="claimTask('${taskId}', '${task.reward_type}', ${JSON.stringify(task.reward_value)})">
                 ${isCompleted ? 'Claimed' : 'Claim'}
               </button>
             </div>
@@ -2147,30 +2249,151 @@
       element.innerHTML = html;
     }
 
-    // Claim task reward
-    async function claimTaskReward(taskId, reward) {
+    // Claim task - متوافق مع نظام المكافآت من الكود الأول
+    async function claimTask(taskId, rewardType, rewardValue) {
       try {
-        // Update user data
-        const completedTasks = userData.completed_tasks || {};
+        // Check if task exists
+        const taskSnapshot = await database.ref('tasks/' + taskId).once('value');
+        const task = taskSnapshot.val();
+        
+        if (!task) {
+          showAlert("Task not found", "error");
+          return;
+        }
+        
+        // Check if already completed
+        if (userData?.completed_tasks?.[taskId]) {
+          showAlert("Task already claimed", "error");
+          return;
+        }
+        
+        // Check task requirements (for special tasks)
+        if (task.category === 'special' && task.required_tasks) {
+          const completedCount = task.required_tasks.filter(reqId => 
+            userData?.completed_tasks?.[reqId]
+          ).length;
+          
+          if (completedCount < (task.required_tasks_count || 1)) {
+            showAlert(`You need to complete ${task.required_tasks_count || 1} required tasks first`, "error");
+            return;
+          }
+        }
+        
+        // Update user data with reward
+        const completedTasks = userData?.completed_tasks || {};
         completedTasks[taskId] = true;
         
-        await database.ref('users/' + currentUserId).update({
+        let updateData = {
           completed_tasks: completedTasks,
-          total_miga: (userData.total_miga || 0) + reward,
-          daily_miga: (userData.daily_miga || 0) + reward,
-          weekly_miga: (userData.weekly_miga || 0) + reward,
-          monthly_miga: (userData.monthly_miga || 0) + reward
-        });
+          updated_at: new Date().toISOString()
+        };
         
-        // Show success message
-        showAlert(`Task completed! +${reward} Mg earned`, 'success');
+        // Process reward based on type
+        if (rewardType === 'miga') {
+          const reward = parseInt(rewardValue) || 0;
+          updateData.total_miga = (userData.total_miga || 0) + reward;
+          updateData.daily_miga = (userData.daily_miga || 0) + reward;
+          updateData.weekly_miga = (userData.weekly_miga || 0) + reward;
+          updateData.monthly_miga = (userData.monthly_miga || 0) + reward;
+          
+          showAlert(`Task completed! +${reward} Miga earned`, 'success');
+          
+        } else if (rewardType === 'plan') {
+          // Grant mining plan
+          const planDays = rewardValue;
+          const planInfo = PLANS[planDays];
+          
+          if (!planInfo) {
+            showAlert("Invalid plan reward", "error");
+            return;
+          }
+          
+          const planExpiry = new Date(Date.now() + (planDays * 24 * 60 * 60 * 1000)).toISOString();
+          const activePlans = userData?.active_plans ? [...userData.active_plans] : [];
+          
+          activePlans.push({
+            plan_name: planInfo.plan_name,
+            days: planInfo.days,
+            ton_amount: planInfo.ton_amount,
+            multiplier: planInfo.multiplier,
+            daily_miga: planInfo.daily_miga,
+            start_time: new Date().toISOString(),
+            end_time: planExpiry,
+            last_update: new Date().toISOString(),
+            mined_so_far: 0,
+            status: "active",
+            total_miga: planInfo.total_miga
+          });
+          
+          updateData.active_plans = activePlans;
+          updateData.total_miga = (userData.total_miga || 0) + planInfo.total_miga;
+          
+          showAlert(`Task completed! You got a ${planInfo.name} plan`, 'success');
+          
+        } else if (rewardType === 'both') {
+          // Grant both Miga and plan
+          const planDays = rewardValue.plan;
+          const migaReward = rewardValue.miga || 0;
+          const planInfo = PLANS[planDays];
+          
+          if (!planInfo) {
+            showAlert("Invalid plan reward", "error");
+            return;
+          }
+          
+          // Add Miga
+          updateData.total_miga = (userData.total_miga || 0) + migaReward + planInfo.total_miga;
+          updateData.daily_miga = (userData.daily_miga || 0) + migaReward;
+          updateData.weekly_miga = (userData.weekly_miga || 0) + migaReward;
+          updateData.monthly_miga = (userData.monthly_miga || 0) + migaReward;
+          
+          // Add plan
+          const planExpiry = new Date(Date.now() + (planDays * 24 * 60 * 60 * 1000)).toISOString();
+          const activePlans = userData?.active_plans ? [...userData.active_plans] : [];
+          
+          activePlans.push({
+            plan_name: planInfo.plan_name,
+            days: planInfo.days,
+            ton_amount: planInfo.ton_amount,
+            multiplier: planInfo.multiplier,
+            daily_miga: planInfo.daily_miga,
+            start_time: new Date().toISOString(),
+            end_time: planExpiry,
+            last_update: new Date().toISOString(),
+            mined_so_far: 0,
+            status: "active",
+            total_miga: planInfo.total_miga
+          });
+          
+          updateData.active_plans = activePlans;
+          
+          showAlert(`Task completed! You got ${migaReward} Miga and a ${planInfo.name} plan`, 'success');
+        }
+        
+        // Update user in database
+        await database.ref('users/' + currentUserId).update(updateData);
+        
+        // Update task progress
+        const currentProgress = task.progress || 0;
+        const maxProgress = task.max_progress || 1;
+        
+        if (currentProgress < maxProgress) {
+          await database.ref('tasks/' + taskId).update({
+            progress: currentProgress + 1,
+            updated_at: new Date().toISOString()
+          });
+        }
+        
+        // Update last_updated timestamp in tasks
+        await database.ref('tasks/last_updated').set(new Date().toISOString());
         
         // Reload tasks
-        initTasksPage();
+        await loadAllTasks();
+        renderAllTasks();
         
       } catch (error) {
-        console.error("Error claiming task reward:", error);
-        showAlert("Error claiming reward. Please try again.", "error");
+        console.error("Error claiming task:", error);
+        showAlert("Error claiming task reward", "error");
       }
     }
 
@@ -2258,6 +2481,12 @@
           }
         }
       }, 30000);
+      
+      // Update tasks every minute
+      setInterval(async () => {
+        await loadAllTasks();
+        renderAllTasks();
+      }, 60000);
     }
 
     // Show alert message
